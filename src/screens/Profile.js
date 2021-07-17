@@ -3,16 +3,16 @@ import {
   View,
   Text,
   SafeAreaView,
-  TextInput,
   Image,
   StyleSheet,
   TouchableOpacity,
 } from 'react-native';
 import Chevron from 'react-native-vector-icons/Entypo';
-import {updateProfile} from '../../redux/actions/user';
+import defaultImage from '../../assets/plate-and-cup.png';
 import {connect} from 'react-redux';
 
 const Profile = props => {
+  const {userData} = props.auth.info;
   return (
     <View style={styles.parent}>
       <Text style={styles.myProfileText}>My Profile</Text>
@@ -26,14 +26,19 @@ const Profile = props => {
       <View style={styles.editProfileContainer}>
         <View style={styles.editProfileContent}>
           <View>
-            <Image style={styles.image} />
+            <Image
+              style={styles.image}
+              source={
+                {uri: userData.picture} ? {uri: userData.picture} : defaultImage
+              }
+            />
           </View>
           <View style={styles.editProfile}>
-            <Text style={styles.userName}>User Name</Text>
+            <Text style={styles.primaryText}>{userData.name}</Text>
             <SafeAreaView>
-              <TextInput placeholder="user email" />
-              <TextInput placeholder="user phone number" />
-              <TextInput placeholder="user address" />
+              <Text style={styles.primaryText}>{userData.username}</Text>
+              <Text style={styles.primaryText}>{userData.phone_number}</Text>
+              <Text style={styles.primaryText}>{userData.user_address}</Text>
             </SafeAreaView>
           </View>
         </View>
@@ -112,9 +117,12 @@ const styles = StyleSheet.create({
     backgroundColor: '#000',
     borderRadius: 90 / 2,
   },
-  userName: {
-    fontWeight: 'bold',
+  primaryText: {
     fontSize: 20,
+    fontWeight: 'bold',
+    color: 'rgba(106, 64, 41, 1)',
+    marginVertical: 5,
+    borderBottomWidth: 1,
   },
   editProfile: {
     marginLeft: 20,

@@ -1,4 +1,4 @@
-import React, {useState} from 'react';
+import React, {useState, useEffect} from 'react';
 import {
   View,
   Text,
@@ -10,36 +10,45 @@ import {
   ScrollView,
 } from 'react-native';
 import Icon from 'react-native-vector-icons/FontAwesome5';
-import {updateProfile} from './../../redux/actions/user';
+import {updateProfile} from '../redux/actions/user';
 import {connect} from 'react-redux';
 import {launchImageLibrary} from 'react-native-image-picker';
+import {authSignOut, authSignIn} from './../redux/actions/auth';
 
 const EditProfile = props => {
   const {userData, refreshToken} = props.auth.info;
   const [picture, setPicture] = useState('');
-  const [updateData, setUpdateData] = useState({
-    name: '',
-    username: '',
-    phone_number: '',
-    user_address: '',
-  });
+  const [username, setUsername] = useState(userData.username);
+  const [name, setName] = useState(userData.name);
+  const [phone_number, setPhoneNumber] = useState(userData.phone_number);
+  const [user_address, setUserAddress] = useState(userData);
 
   const selectPicture = event => {
+    console.log(event);
     if (!event.didCancel) {
-      setPicture(event.assets[0].uri);
+      setPicture(event.assets[0]);
+    } else {
+      console.log('cancel');
     }
   };
 
   const updateUserData = () => {
     const setData = {
-      name: updateData.name,
-      user_address: userData.user_address,
-      picture: picture,
+      picture,
+      username,
+      name,
+      phone_number,
+      user_address,
     };
     props.updateProfile(refreshToken, userData.id, setData);
   };
 
+  // useEffect(() => {
+  //   updateUserData();
+  // }, [userData]);
+
   console.log(userData);
+
   return (
     <View style={styles.parent}>
       <Text style={styles.editProfileText}>Edit Profile</Text>
@@ -47,7 +56,10 @@ const EditProfile = props => {
         <TouchableOpacity
           onPress={() => launchImageLibrary({}, selectPicture)}
           style={styles.profilePictureContainer}>
-          <Image source={{uri: picture}} style={styles.profilePicture} />
+          <Image
+            source={{uri: userData.picture}}
+            style={styles.profilePicture}
+          />
           <View style={styles.penContainer}>
             <Icon name="pen" style={styles.pen} />
           </View>
@@ -56,25 +68,28 @@ const EditProfile = props => {
           <SafeAreaView>
             <Text style={styles.label}>Name :</Text>
             <TextInput
-              value={updateData.name}
+              value={name}
               style={styles.input}
-              onChangeText={e => setUpdateData(e)}
+              onChangeText={setName}
+              defaultValue={userData.name}
             />
           </SafeAreaView>
           <SafeAreaView>
             <Text style={styles.label}>Email Address :</Text>
             <TextInput
-              value={updateData.username}
+              value={username}
               style={styles.input}
-              onChangeText={e => setUpdateData(e)}
+              onChangeText={setUsername}
+              defaultValue={userData.username}
             />
           </SafeAreaView>
           <SafeAreaView>
             <Text style={styles.label}>Phone Number :</Text>
             <TextInput
-              value={updateData.phone_number}
+              value={phone_number}
               style={styles.input}
-              onChangeText={e => setUpdateData(e)}
+              onChangeText={setPhoneNumber}
+              defaultValue={userData.phone_number}
             />
           </SafeAreaView>
           <SafeAreaView>
@@ -84,9 +99,10 @@ const EditProfile = props => {
           <SafeAreaView>
             <Text style={styles.label}>Delivery Address :</Text>
             <TextInput
-              value={updateData.user_address}
+              value={user_address}
               style={styles.input}
-              onChangeText={e => setUpdateData(e)}
+              onChangeText={setUserAddress}
+              defaultValue={userData.user_address}
             />
           </SafeAreaView>
         </View>
@@ -164,6 +180,6 @@ const mapStateToProps = state => ({
   auth: state.auth,
 });
 
-const mapDispatchToProps = {updateProfile};
+const mapDispatchToProps = {updateProfile, authSignOut, authSignIn};
 
 export default connect(mapStateToProps, mapDispatchToProps)(EditProfile);

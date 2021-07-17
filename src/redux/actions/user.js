@@ -3,11 +3,15 @@ import {API_URL} from '@env';
 
 export const updateProfile = (token, id, userData) => async dispatch => {
   const form = new FormData();
-  form.append('picture', userData.picture);
+  form.append('picture', {
+    uri: userData.picture.uri,
+    name: userData.picture.fileName,
+    type: userData.picture.type,
+  });
   form.append('name', userData.name);
   form.append('username', userData.username);
   form.append('phone_number', userData.phone_number);
-  form.append('address', userData.user_address);
+  form.append('user_address', userData.user_address);
   try {
     const {data} = await http(token, id).put(
       `${API_URL}/user/update-profile`,
@@ -18,6 +22,15 @@ export const updateProfile = (token, id, userData) => async dispatch => {
       payload: data.data,
     });
   } catch (err) {
-    console.log(err);
+    dispatch({
+      type: 'UPLOAD_FAILED',
+      payload: err.response.data.data,
+    });
   }
+};
+
+export const onToggleBar = () => dispatch => {
+  dispatch({
+    type: 'TOGGLE_BAR',
+  });
 };

@@ -1,14 +1,25 @@
 import {http} from '../../helpers/http';
 import {API_URL} from '@env';
 
+export const toggleAuth = () => ({
+  type: 'TOGGLE_AUTH',
+});
+
+export const errorDefault = () => dispatch => {
+  setTimeout(() => {
+    dispatch({
+      type: 'ERROR_DEFAULT',
+    });
+  }, 800);
+};
+
 export const authSignUp =
-  (username, password, resend_password, phone_number) => async dispatch => {
+  (username, password, phone_number) => async dispatch => {
     try {
       const {data} = await http().post(
         `${API_URL}/auth/signup`,
         username,
         password,
-        resend_password,
         phone_number,
       );
       dispatch({
@@ -16,6 +27,10 @@ export const authSignUp =
         payload: data.data,
       });
     } catch (err) {
+      dispatch({
+        type: 'AUTH_SIGNUP_REJECTED',
+        err: err.response.data,
+      });
       console.log(err);
     }
   };
@@ -38,3 +53,7 @@ export const authSignIn = (username, password, info) => async dispatch => {
     });
   }
 };
+
+export const authSignOut = () => ({
+  type: 'AUTH_SIGNOUT',
+});

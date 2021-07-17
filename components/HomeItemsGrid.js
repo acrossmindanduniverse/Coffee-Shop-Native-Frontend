@@ -1,34 +1,32 @@
 import React from 'react';
-import {View, Text, StyleSheet, Image, TouchableOpacity} from 'react-native';
-import {FlatGrid} from 'react-native-super-grid';
+import {
+  View,
+  Text,
+  StyleSheet,
+  Image,
+  TouchableOpacity,
+  FlatList,
+} from 'react-native';
 import {connect} from 'react-redux';
 
 const HomeItemsGrid = props => {
   const {params} = props.route;
   return (
-    <View>
+    <View style={styles.parent}>
       <View style={styles.favouriteContainer}>
         <Text style={styles.favourite}>Choose your favourite</Text>
         <Text style={styles.category}>{params[0].category_name}</Text>
       </View>
-      <FlatGrid
-        itemDimension={230}
+      <FlatList
         data={params}
-        spacing={10}
+        style={styles.gridView}
+        numColumns={2}
         renderItem={({item}) => (
-          <View>
-            <TouchableOpacity
-              onPress={() => props.navigation.navigate('detail')}
-            />
-            <View style={styles.itemContainer}>
-              <View style={styles.itemInfo}>
-                <Image
-                  style={styles.picture}
-                  source={{uri: `${item.picture}`}}
-                />
-                <Text style={styles.itemName}>{item.name}</Text>
-                <Text style={styles.itemPrice}>IDR {item.price}</Text>
-              </View>
+          <View style={styles.itemContainer}>
+            <View style={styles.itemInfo}>
+              <Image style={styles.picture} source={{uri: `${item.picture}`}} />
+              <Text style={styles.itemName}>{item.name}</Text>
+              <Text style={styles.itemPrice}>IDR {item.price}</Text>
             </View>
           </View>
         )}
@@ -38,9 +36,15 @@ const HomeItemsGrid = props => {
 };
 
 const styles = StyleSheet.create({
+  // parent: {
+  //   flex: 1,
+  // },
   favouriteContainer: {
-    marginVertical: 50,
     alignItems: 'center',
+    marginVertical: 50,
+  },
+  gridView: {
+    marginHorizontal: 30,
   },
   favourite: {
     fontSize: 40,
@@ -62,7 +66,7 @@ const styles = StyleSheet.create({
     backgroundColor: 'grey',
   },
   itemContainer: {
-    top: 50,
+    marginVertical: 80,
     borderRadius: 25,
     width: 180,
     height: 260,

@@ -60,6 +60,7 @@ const styles = StyleSheet.create({
   },
   imageText2: {
     fontSize: 30,
+    fontFamily: 'Poppins-Medium',
     textAlign: 'center',
   },
   welcomeText: {
@@ -84,13 +85,13 @@ const styles = StyleSheet.create({
     marginHorizontal: 31,
   },
   buttonText1: {
-    fontWeight: 'bold',
+    fontFamily: 'Poppins-Bold',
     color: '#fff',
     textAlign: 'center',
     fontSize: 17,
   },
   buttonText2: {
-    fontWeight: 'bold',
+    fontFamily: 'Poppins-Bold',
     color: '#000',
     textAlign: 'center',
     fontSize: 17,

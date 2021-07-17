@@ -1,3 +1,4 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 import React, {useState, useEffect} from 'react';
 import {
   View,
@@ -7,7 +8,6 @@ import {
   TouchableOpacity,
   SafeAreaView,
   TextInput,
-  FlatList,
   Image,
 } from 'react-native';
 import Icon from 'react-native-vector-icons/AntDesign';
@@ -18,7 +18,7 @@ import {
   getItemsCategory,
   getItemsByCategory,
   searchItems,
-} from '../../redux/actions/items';
+} from '../redux/actions/items';
 
 const HomeScreen = props => {
   const {data, dataByCategory, searchItemsData} = props.items;
@@ -35,6 +35,7 @@ const HomeScreen = props => {
     });
     setCategoryName(newCategoryName);
   };
+  console.log(categoryName);
 
   const handleTabTouch = tabComp => {
     setScreenTab(tabComp);
@@ -44,7 +45,7 @@ const HomeScreen = props => {
   const onSearch = searchData => {
     props.searchItems(searchData);
     if (searchData) {
-      props.navigation.navigate('searchItems');
+      props.navigation.navigate('searchItems', searchData);
     }
   };
   console.log(searchItemsData);
@@ -52,6 +53,8 @@ const HomeScreen = props => {
   useEffect(() => {
     mapAllCategoryName(data);
   }, [data]);
+
+  console.log(props.descriptors, 'test');
 
   useEffect(() => {
     if (categoryName[0]) {
@@ -78,26 +81,84 @@ const HomeScreen = props => {
               <Icon style={styles.icon} name="search1" />
             </View>
             <TextInput
+              onTouchStart={e => console.log(e, 'search event')}
               style={styles.searchInput}
-              placeholder="search items"
+              placeholder="Search"
               onChangeText={values => setSearch(values)}
               onSubmitEditing={() => onSearch(search)}
             />
           </SafeAreaView>
         </View>
-        <ScrollView horizontal showsHorizontalScrollIndicator={false}>
-          <FlatList
-            horizontal
-            data={categoryName}
-            renderItem={({item}) => (
-              <View style={styles.tab}>
-                <TouchableOpacity onPress={() => handleTabTouch(item)}>
-                  <Text style={styles.tabName}>{item}</Text>
-                </TouchableOpacity>
-              </View>
-            )}
-            keyExtractor={(_, index) => String(index)}
-          />
+        <ScrollView
+          showsHorizontalScrollIndicator={false}
+          horizontal
+          style={styles.categoryNameContainer}>
+          <View style={styles.tab}>
+            <TouchableOpacity onPress={() => handleTabTouch(categoryName[3])}>
+              <Text
+                style={
+                  screenTab === categoryName[3]
+                    ? styles.tabName2
+                    : styles.tabName
+                }>
+                {categoryName[3]}
+              </Text>
+            </TouchableOpacity>
+          </View>
+          <View style={styles.tab}>
+            <TouchableOpacity onPress={() => handleTabTouch(categoryName[0])}>
+              <Text
+                style={
+                  screenTab === categoryName[0]
+                    ? styles.tabName2
+                    : styles.tabName
+                }>
+                {categoryName[0]}
+              </Text>
+            </TouchableOpacity>
+          </View>
+          <View style={styles.tab}>
+            <TouchableOpacity onPress={() => handleTabTouch(categoryName[1])}>
+              <Text
+                style={
+                  screenTab === categoryName[1]
+                    ? styles.tabName2
+                    : styles.tabName
+                }>
+                {categoryName[1]}
+              </Text>
+            </TouchableOpacity>
+          </View>
+          <View style={styles.tab}>
+            <TouchableOpacity
+              onPress={() => props.navigation.navigate('promo')}>
+              <Text style={styles.tabName}>Promo</Text>
+            </TouchableOpacity>
+          </View>
+          <View style={styles.tab}>
+            <TouchableOpacity onPress={() => handleTabTouch(categoryName[2])}>
+              <Text
+                style={
+                  screenTab === categoryName[2]
+                    ? styles.tabName2
+                    : styles.tabName
+                }>
+                {categoryName[2]}
+              </Text>
+            </TouchableOpacity>
+          </View>
+          <View style={styles.tab}>
+            <TouchableOpacity onPress={() => handleTabTouch(categoryName[4])}>
+              <Text
+                style={
+                  screenTab === categoryName[2]
+                    ? styles.tabName2
+                    : styles.tabName
+                }>
+                {categoryName[4]}
+              </Text>
+            </TouchableOpacity>
+          </View>
         </ScrollView>
         <TouchableOpacity
           style={styles.seeMore}
@@ -115,6 +176,7 @@ const HomeScreen = props => {
               style={styles.productCard}
               key={index}>
               <View>
+                {console.log(item.picture)}
                 <Image source={{uri: `${item.picture}`}} style={styles.image} />
                 <Text style={styles.primaryFontBold}>{item.name}</Text>
               </View>
@@ -152,12 +214,14 @@ const styles = StyleSheet.create({
     backgroundColor: '#EFEEEE',
   },
   slogan: {
-    alignItems: 'center',
     marginTop: 90,
   },
   sloganText: {
-    fontWeight: 'bold',
-    fontSize: 60,
+    fontFamily: 'Poppins-Black',
+    width: 285,
+    color: 'rgba(106, 64, 41, 1)',
+    marginHorizontal: 30,
+    fontSize: 35,
   },
   inputContainer: {
     alignItems: 'center',
@@ -168,7 +232,8 @@ const styles = StyleSheet.create({
     backgroundColor: '#fff',
     elevation: 2,
     borderRadius: 40,
-    width: 300,
+    height: 70,
+    width: 350,
   },
   iconContainer: {
     alignItems: 'center',
@@ -178,13 +243,30 @@ const styles = StyleSheet.create({
     marginLeft: 10,
     fontSize: 20,
   },
+  searchInput: {
+    fontFamily: 'Poppins-Bold',
+    fontSize: 16,
+    width: '100%',
+    color: '#000',
+  },
+  categoryNameContainer: {
+    flexDirection: 'row',
+  },
   tab: {
-    margin: 35,
     marginTop: 90,
+    marginLeft: 30,
   },
   tabName: {
     fontSize: 20,
+    fontFamily: 'Poppins-Medium',
     color: '#9A9A9D',
+  },
+  tabName2: {
+    fontSize: 20,
+    fontFamily: 'Poppins-Medium',
+    color: '#9A9A9D',
+    borderBottomColor: 'rgba(106, 64, 41, 1)',
+    borderBottomWidth: 3,
   },
   productCardParent: {
     margin: 20,

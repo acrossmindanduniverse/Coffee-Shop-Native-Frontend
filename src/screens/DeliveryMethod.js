@@ -1,4 +1,5 @@
 import React from 'react';
+import {connect} from 'react-redux';
 import {
   View,
   Text,
@@ -6,16 +7,22 @@ import {
   TouchableOpacity,
   TextInput,
   SafeAreaView,
-  ScrollView,
 } from 'react-native';
 
-const DeliveryMethod = () => {
+const DeliveryMethod = props => {
+  const {userData} = props.auth.info;
+  const {items} = props.cart;
+  const newItems = items.map(e => e.amount);
+  const addItems = newItems.map(e => e.final_price);
+  const total = addItems.reduce((acc, curr) => acc + curr);
+
+  console.log(addItems.reduce((acc, curr) => acc + curr));
   return (
     <View style={styles.parent}>
       <View style={styles.checkoutContainer}>
         <Text style={styles.checkoutText}>Checkout</Text>
       </View>
-      <ScrollView style={styles.infoContainer}>
+      <View style={styles.infoContainer}>
         <View style={styles.addressContainer}>
           <Text style={styles.primaryText}>Address</Text>
           <View style={styles.addressInputContent}>
@@ -67,18 +74,24 @@ const DeliveryMethod = () => {
             </SafeAreaView>
           </View>
         </View>
-        <View stlye={styles.costContainer}>
-          <View>
-            <Text style={styles.primaryText}>Cost</Text>
-          </View>
-          <View>
-            <Text style={styles.primaryText}>IDR 000</Text>
-          </View>
+        <View style={styles.costContainer}>
+          <Text style={styles.primaryText}>Cost</Text>
+          <Text style={styles.primaryText}>IDR {total}</Text>
         </View>
-      </ScrollView>
-      <TouchableOpacity style={styles.confirmBtn}>
-        <Text style={styles.confirmBtnText}>Confirm and pay</Text>
-      </TouchableOpacity>
+        {userData.user_address.length > 0 ? (
+          <TouchableOpacity
+            style={styles.confirmBtn}
+            onPress={() => props.navigation.navigate('payment')}>
+            <Text style={styles.confirmBtnText}>Confirm and pay</Text>
+          </TouchableOpacity>
+        ) : (
+          <TouchableOpacity
+            style={styles.confirmBtn}
+            onPress={() => props.navigation.navigate('profile')}>
+            <Text style={styles.confirmBtnText}>Please add address first</Text>
+          </TouchableOpacity>
+        )}
+      </View>
     </View>
   );
 };
@@ -88,21 +101,21 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   checkoutContainer: {
-    height: 290,
+    height: 414,
     bottom: 30,
     backgroundColor: '#6A4029',
     borderRadius: 30,
   },
   checkoutText: {
-    top: 45,
+    top: 100,
     fontSize: 20,
     textAlign: 'center',
     color: '#fff',
-    fontWeight: 'bold',
+    fontFamily: 'Poppins-Bold',
   },
   infoContainer: {
     marginHorizontal: 50,
-    bottom: 150,
+    bottom: 230,
   },
   addressInputContent: {
     top: 35,
@@ -119,7 +132,7 @@ const styles = StyleSheet.create({
   },
   addressContainer: {
     backgroundColor: '#fff',
-    height: 280,
+    height: 300,
     borderRadius: 20,
   },
   addressInput: {
@@ -155,7 +168,7 @@ const styles = StyleSheet.create({
     left: 64,
   },
   yesOrNoOptionsBtnText: {
-    color: '#fff',
+    color: '#000',
     textAlign: 'center',
     fontSize: 15,
   },
@@ -164,7 +177,7 @@ const styles = StyleSheet.create({
     width: 106,
     justifyContent: 'center',
     height: 41,
-    backgroundColor: 'grey',
+    backgroundColor: '#F4F4F8',
     borderRadius: 10,
   },
   setTimeContainer: {
@@ -195,7 +208,7 @@ const styles = StyleSheet.create({
     margin: 20,
   },
   deliveryTimeBtn: {
-    backgroundColor: 'grey',
+    backgroundColor: '#F4F4F8',
     justifyContent: 'center',
     marginHorizontal: 15,
     width: 106,
@@ -203,29 +216,42 @@ const styles = StyleSheet.create({
     borderRadius: 10,
   },
   deliveryTimeBtnText: {
-    color: '#fff',
+    color: '#000',
     textAlign: 'center',
     fontSize: 15,
+  },
+  costContainer: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    backgroundColor: '#fff',
+    alignContent: 'center',
+    borderRadius: 20,
+    height: 65,
+    marginVertical: 48,
   },
   deliveryTimeContainer: {
     backgroundColor: '#fff',
     borderRadius: 20,
     top: 24,
-    height: 280,
+    height: 300,
   },
   confirmBtn: {
     backgroundColor: '#6A4029',
     borderRadius: 20,
-    marginHorizontal: 50,
     height: 70,
     justifyContent: 'center',
     alignItems: 'center',
   },
   confirmBtnText: {
-    fontWeight: 'bold',
+    fontFamily: 'Poppins-Bold',
     color: '#fff',
     fontSize: 18,
   },
 });
 
-export default DeliveryMethod;
+const mapStateToProps = state => ({
+  cart: state.cart,
+  auth: state.auth,
+});
+
+export default connect(mapStateToProps)(DeliveryMethod);

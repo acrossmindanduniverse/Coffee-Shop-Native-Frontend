@@ -1,19 +1,29 @@
-import React from 'react';
-import {View, Text, StyleSheet, Image} from 'react-native';
-import {FlatGrid} from 'react-native-super-grid';
+import React, {useEffect, useState} from 'react';
+import {View, Text, StyleSheet, Image, FlatList} from 'react-native';
 import {connect} from 'react-redux';
+import {searchItems} from '../src/redux/actions/items';
 
 const SearchItems = props => {
-  const {searchItemsData} = props.items;
+  const {params} = props.route;
+  const [reached, setReached] = useState(false);
+  const {searchItemsData, pageInfo} = props.items;
   const err = 'there is no item anymore';
-  console.log(searchItemsData, 'searched');
+  console.log(pageInfo.nextPage, 'searched');
+
+  const paginate = () => {
+    if (pageInfo.nextPage !== null) {
+      props.searchItems(params, pageInfo.nextPage);
+    }
+  };
+
   return searchItemsData !== err ? (
     <View>
-      <FlatGrid
-        itemDimension={230}
+      <FlatList
         data={searchItemsData}
         style={styles.gridView}
-        spacing={10}
+        onEndReached={paginate}
+        onEndReachedThreshold={0}
+        numColumns={2}
         renderItem={({item}) => (
           <View style={styles.itemContainer}>
             <View style={styles.itemInfo}>
@@ -42,6 +52,9 @@ const styles = StyleSheet.create({
   favourite: {
     fontSize: 40,
     fontWeight: 'bold',
+  },
+  gridView: {
+    marginHorizontal: 30,
   },
   category: {
     color: 'rgba(106, 64, 41, 1)',
@@ -97,4 +110,6 @@ const mapStateToProps = state => ({
   items: state.items,
 });
 
-export default connect(mapStateToProps)(SearchItems);
+const mapDispatchToProps = {searchItems};
+
+export default connect(mapStateToProps, mapDispatchToProps)(SearchItems);

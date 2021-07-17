@@ -25,7 +25,7 @@ const NoOrder = props => {
       </ScrollView>
       <View style={styles.btnOrder}>
         <TouchableOpacity
-          onPress={() => props.navigation.goBack('home')}
+          onPress={() => props.navigation.navigate('home')}
           style={styles.btn}>
           <Text style={styles.orderText}>Start ordering</Text>
         </TouchableOpacity>

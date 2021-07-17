@@ -1,5 +1,5 @@
 import {Formik} from 'formik';
-import React, {useState} from 'react';
+import React, {useState, useEffect} from 'react';
 import {
   View,
   Text,
@@ -7,82 +7,81 @@ import {
   StyleSheet,
   TextInput,
   TouchableOpacity,
+  ScrollView,
 } from 'react-native';
+import {signUpSchema} from '../../components/validationSchema';
 import Icon from 'react-native-vector-icons/FontAwesome';
 import image from '../../assets/sign-up.png';
 import {connect} from 'react-redux';
-import {authSignUp} from './../../redux/actions/auth';
+import {authSignUp, errorDefault} from '../redux/actions/auth';
+
+// useEffect(() => {
+
+// }, []);
 
 const SignUp = props => {
+  console.log(props.auth);
   return (
     <View style={styles.parent}>
       <ImageBackground style={styles.image} source={image} resizeMode="cover">
-        <Text style={styles.signUp}>Sign Up</Text>
-        <Formik
-          style={styles.input}
-          initialValues={{
-            username: '',
-            password: '',
-            resend_password: '',
-            phone_number: '',
-          }}
-          onSubmit={values => props.authSignUp(values)}>
-          {({handleChange, handleBlur, handleSubmit, values}) => (
-            <View style={styles.signUpContainer}>
-              <View>
-                <TextInput
-                  style={styles.signUpForm}
-                  onChangeText={handleChange('username')}
-                  onBlur={handleBlur('username')}
-                  placeholder="Email Address"
-                  placeholderTextColor="#fff"
-                  value={values.username}
-                />
-                <TextInput
-                  style={styles.signUpForm}
-                  onChangeText={handleChange('password')}
-                  onBlur={handleBlur('password')}
-                  secureTextEntry={true}
-                  placeholder="Password"
-                  placeholderTextColor="#fff"
-                  value={values.password}
-                />
-                <TextInput
-                  style={styles.signUpForm}
-                  onChangeText={handleChange('resend_password')}
-                  onBlur={handleBlur('resend_password')}
-                  secureTextEntry={true}
-                  placeholder="Resend Password"
-                  placeholderTextColor="#fff"
-                  value={values.resend_password}
-                />
-                <TextInput
-                  style={styles.signUpForm}
-                  onChangeText={handleChange('phone_number')}
-                  onBlur={handleBlur('phone_number')}
-                  placeholder="Phone Number"
-                  placeholderTextColor="#fff"
-                  value={values.phone_number}
-                />
+        <ScrollView>
+          <Text style={styles.signUp}>Sign Up</Text>
+          <Formik
+            style={styles.input}
+            initialValues={{
+              username: '',
+              password: '',
+              phone_number: '',
+            }}
+            validationSchema={signUpSchema}
+            onSubmit={val => props.authSignUp(val)}>
+            {({errors, handleChange, handleBlur, handleSubmit, values}) => (
+              <View style={styles.signUpContainer}>
+                <View>
+                  <Text style={styles.errorMessage}>{errors.username}</Text>
+                  <TextInput
+                    style={styles.signUpForm}
+                    onChangeText={handleChange('username')}
+                    onBlur={handleBlur('username')}
+                    placeholder="Email Address"
+                    placeholderTextColor="#fff"
+                    value={values.username}
+                  />
+                  <TextInput
+                    style={styles.signUpForm}
+                    onChangeText={handleChange('password')}
+                    onBlur={handleBlur('password')}
+                    secureTextEntry={true}
+                    placeholder="Password"
+                    placeholderTextColor="#fff"
+                    value={values.password}
+                  />
+                  <TextInput
+                    style={styles.signUpForm}
+                    onChangeText={handleChange('phone_number')}
+                    onBlur={handleBlur('phone_number')}
+                    placeholder="Phone Number"
+                    placeholderTextColor="#fff"
+                    value={values.phone_number}
+                  />
+                </View>
+                <View style={styles.btnContainer}>
+                  <TouchableOpacity
+                    style={styles.signUpBtn}
+                    onPress={handleSubmit}>
+                    <Text style={styles.signUpText}>Create Account</Text>
+                  </TouchableOpacity>
+                  <TouchableOpacity style={styles.googleSignUp}>
+                    <Icon style={styles.googleIcon} name="google" />
+                    <Text style={styles.googleSignUpText}>
+                      Create With Google
+                    </Text>
+                  </TouchableOpacity>
+                </View>
               </View>
-              <View style={styles.btnContainer}>
-                <TouchableOpacity
-                  style={styles.signUpBtn}
-                  onPress={handleSubmit}>
-                  <Text style={styles.signUpText}>Create Account</Text>
-                </TouchableOpacity>
-                <TouchableOpacity
-                  style={styles.googleSignUp}
-                  onPress={handleSubmit}>
-                  <Icon style={styles.googleIcon} name="google" />
-                  <Text style={styles.googleSignUpText}>
-                    Create With Google
-                  </Text>
-                </TouchableOpacity>
-              </View>
-            </View>
-          )}
-        </Formik>
+            )}
+          </Formik>
+        </ScrollView>
       </ImageBackground>
     </View>
   );
@@ -91,20 +90,28 @@ const SignUp = props => {
 const styles = StyleSheet.create({
   parent: {
     backgroundColor: 'rgba(0, 0, 0, 0.3)',
+    flex: 1,
+    flexDirection: 'column',
   },
   image: {
     height: '100%',
+    flex: 1,
   },
   signUpContainer: {
-    marginTop: 260,
+    marginTop: 330,
   },
   signUp: {
     fontSize: 70,
     marginTop: 180,
     textAlign: 'center',
     fontStyle: 'normal',
-    fontWeight: 'bold',
+    fontFamily: 'Poppins-Bold',
     color: '#fff',
+  },
+  errorMessage: {
+    fontSize: 20,
+    color: 'red',
+    marginHorizontal: 31,
   },
   signUpForm: {
     borderBottomWidth: 1,
@@ -116,6 +123,7 @@ const styles = StyleSheet.create({
   },
   btnContainer: {
     marginHorizontal: 31,
+    flex: 1,
     marginTop: 40,
   },
   signUpBtn: {
@@ -151,6 +159,10 @@ const styles = StyleSheet.create({
   },
 });
 
-const mapDispatchToProps = {authSignUp};
+const mapStateToProps = state => ({
+  auth: state.auth,
+});
 
-export default connect(null, mapDispatchToProps)(SignUp);
+const mapDispatchToProps = {authSignUp, errorDefault};
+
+export default connect(mapStateToProps, mapDispatchToProps)(SignUp);

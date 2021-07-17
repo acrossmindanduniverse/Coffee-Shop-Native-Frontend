@@ -1,21 +1,42 @@
-import React from 'react';
-import {View, Text, StyleSheet, Image, TouchableOpacity} from 'react-native';
-import {FlatGrid} from 'react-native-super-grid';
+import React, {useEffect, useState, useCallback} from 'react';
+import {
+  View,
+  Text,
+  StyleSheet,
+  Image,
+  // TouchableOpacity,
+  FlatList,
+} from 'react-native';
 import {connect} from 'react-redux';
 
 const AllMenu = props => {
   const {data} = props.items;
-  console.log(props.items);
+  const [getData, setGetData] = useState([]);
+  const [shouldFetch, setShouldFetch] = useState(true);
+  const [screen, setScreen] = useState(1);
+
+  const dataPagination = useCallback(() => setShouldFetch(true), []);
+
+  useEffect(() => {
+    const fetch = page => {
+      setShouldFetch(false);
+      setGetData(oldData => [...oldData, ...data]);
+      setScreen(page + 1);
+    };
+    fetch();
+  }, [data]);
+
   return (
-    <View>
+    <View style={styles.parent}>
       <View style={styles.favouriteContainer}>
         <Text style={styles.favourite}>All Menu</Text>
         <Text style={styles.category}>Pick your good deals</Text>
       </View>
-      <FlatGrid
-        itemDimension={230}
+      <FlatList
         data={data}
-        spacing={10}
+        numColumns={2}
+        onEndReachedThreshold={0.5}
+        onEndReached={getData}
         renderItem={({item}) => (
           <View>
             <View style={styles.itemContainer}>
@@ -36,6 +57,9 @@ const AllMenu = props => {
 };
 
 const styles = StyleSheet.create({
+  parent: {
+    flex: 1,
+  },
   favouriteContainer: {
     marginVertical: 50,
     alignItems: 'center',
@@ -66,6 +90,7 @@ const styles = StyleSheet.create({
   itemContainer: {
     top: 50,
     borderRadius: 25,
+    marginHorizontal: 55,
     width: 180,
     height: 260,
     backgroundColor: '#fff',

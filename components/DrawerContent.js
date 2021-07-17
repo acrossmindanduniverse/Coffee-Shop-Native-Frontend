@@ -11,11 +11,12 @@ import {
 
 const DrawerContent = props => {
   const {userData} = props.auth.info;
+  console.log(props.descriptors);
   const menuItem = Object.keys(props.descriptors);
   const renderMenu = menuItem.map(
     item => props.descriptors[item].options.title,
   );
-  console.log(menuItem[0].split('-')[0]);
+
   return (
     <View style={drawerContent.parent}>
       <View style={drawerContent.profileInfo}>

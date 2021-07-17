@@ -5,6 +5,7 @@ const initialState = {
   allItems: [],
   searchItemsData: [],
   variantDetail: [],
+  allTransactions: [],
   pageInfo: [],
   errMsg: '',
 };
@@ -37,6 +38,13 @@ const items = (state = initialState, action) => {
         searchItemsData: action.payload.items,
       };
     }
+    case 'SEARCH_ITEMS_NEXT': {
+      return {
+        ...state,
+        searchItemsData: [...state.searchItemsData, ...action.payload.items],
+        pageInfo: action.payload.pageInfo,
+      };
+    }
     case 'ITEM_NOT_FOUND': {
       return {
         ...state,
@@ -53,6 +61,18 @@ const items = (state = initialState, action) => {
       return {
         ...state,
         variantDetail: action.payload.items,
+      };
+    }
+    case 'GET_ALL_TRANSACTIONS': {
+      return {
+        ...state,
+        allTransactions: action.payload.items,
+      };
+    }
+    case 'GET_ALL_TRANSACTIONS_FAILED': {
+      return {
+        ...state,
+        err: action.payload,
       };
     }
     default: {

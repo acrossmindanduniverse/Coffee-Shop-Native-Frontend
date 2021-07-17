@@ -48,15 +48,26 @@ export const getAllItems = () => async dispatch => {
   }
 };
 
-export const searchItems = key => async dispatch => {
+export const searchItems = (key, page) => async dispatch => {
   try {
-    const {data} = await http().get(`${API_URL}/items?search=${key}`);
-    dispatch({
-      type: 'SEARCH_ITEMS',
-      payload: {
-        items: data.data,
-      },
-    });
+    if (!page) {
+      const {data} = await http().get(`${API_URL}/items?search=${key}`);
+      dispatch({
+        type: 'SEARCH_ITEMS',
+        payload: {
+          items: data.data,
+        },
+      });
+    } else {
+      const {data} = await http().get(`${API_URL}/items?search=${key}&${page}`);
+      dispatch({
+        type: 'SEARCH_ITEMS_NEXT',
+        payload: {
+          items: data.data,
+          pageInfo: data.pageInfo,
+        },
+      });
+    }
   } catch (err) {
     console.log(err);
   }
@@ -89,5 +100,24 @@ export const getDetailItemVariant = (id, variant) => async dispatch => {
     });
   } catch (err) {
     console.log(err);
+  }
+};
+
+export const getAllTransactions = (token, id) => async dispatch => {
+  try {
+    const {data} = await http(token, id).get(
+      `${API_URL}/private/user-transactions`,
+    );
+    dispatch({
+      type: 'GET_ALL_TRANSACTIONS',
+      payload: {
+        items: data.data,
+      },
+    });
+  } catch (err) {
+    dispatch({
+      type: 'GET_ALL_TRANSACTIONS_FAILED',
+      err: err.response.data.data,
+    });
   }
 };

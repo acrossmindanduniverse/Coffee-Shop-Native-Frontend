@@ -1,4 +1,4 @@
-import React, {useEffect} from 'react';
+import React, {useEffect, useState} from 'react';
 import {
   View,
   Text,
@@ -11,15 +11,14 @@ import {SwipeListView} from 'react-native-swipe-list-view';
 import MaterialIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 import EvillCons from 'react-native-vector-icons/EvilIcons';
 import FontAwesome from 'react-native-vector-icons/FontAwesome';
-import {addItems} from '../../redux/actions/cart';
+import {addItems} from '../redux/actions/cart';
 import {connect} from 'react-redux';
 import NoOrder from '../../components/NoOrder';
 
 const Cart = props => {
-  const {cartItem} = props.cart;
-  console.log(cartItem);
+  const {cartItem, items} = props.cart;
 
-  return cartItem.length > 0 ? (
+  return items.length > 0 ? (
     <View style={styles.parent}>
       <Text style={styles.cartItem}>Cart</Text>
       <View style={styles.cartItemContent}>
@@ -29,30 +28,21 @@ const Cart = props => {
         </View>
         <ScrollView style={styles.cartItemContainer}>
           <SwipeListView
-            data={cartItem}
+            data={items}
             renderItem={(itemData, idx) => {
-              console.log(itemData.item.id);
+              console.log(itemData, 'test');
               return (
                 <View key={idx} style={styles.cart}>
                   <View style={styles.itemImageContainer}>
                     <Image style={styles.itemImage} />
                   </View>
                   <View>
-                    <Text style={styles.itemName}>{itemData.item.name}</Text>
-                    <Text style={styles.itemInfo}>
-                      IDR {itemData.item.final_price}
+                    <Text style={styles.itemName}>
+                      {itemData.item.amount.name}
                     </Text>
-                  </View>
-                  <View style={styles.amountContainer}>
-                    <View style={styles.amountCounter}>
-                      <TouchableOpacity style={styles.counterBtn}>
-                        <Text style={styles.amountText}>-</Text>
-                      </TouchableOpacity>
-                      <Text style={styles.amountText}>0</Text>
-                      <TouchableOpacity style={styles.counterBtn}>
-                        <Text style={styles.amountText}>+</Text>
-                      </TouchableOpacity>
-                    </View>
+                    <Text style={styles.itemInfo}>
+                      IDR {itemData.item.amount.final_price}
+                    </Text>
                   </View>
                 </View>
               );

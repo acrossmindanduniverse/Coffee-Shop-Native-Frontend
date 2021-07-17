@@ -3,49 +3,37 @@ import React, {useEffect, useState} from 'react';
 import {View, Text, StyleSheet, TouchableOpacity, FlatList} from 'react-native';
 import Icon from 'react-native-vector-icons/FontAwesome';
 import {connect} from 'react-redux';
-import {addItemsToCart} from '../../redux/actions/cart';
+import {addItems} from '../redux/actions/cart';
 import {
   getItemsAndVariants,
   getDetailItemVariant,
-} from '../../redux/actions/items';
+} from '../redux/actions/items';
 
 const ProductDetail = props => {
   const {params} = props.route;
   const {itemsAndVariants, variantDetail} = props.items;
   const variant = itemsAndVariants.map(row => row.variant_code);
   const [_, setScreenTab] = useState();
-  // const [newItem, setNewItem] = useState([]);
-  // const [cart, setCart] = useState();
+  const [amount, setAmount] = useState(1);
 
   const handleVariantTouch = (id, tab) => {
     props.getDetailItemVariant(id, tab);
     setScreenTab(tab);
   };
 
-  // console.log(props.cart.cartItem);
-
-  const handleAddItem = data => {
-    props.addItemsToCart(data);
+  const handleAddItem = (data, data2) => {
+    props.addItems(data, data2);
   };
 
   useEffect(() => {
-    props.getDetailItemVariant(params, variant[0]);
-  }, [itemsAndVariants]);
+    if (handleAddItem) {
+      setAmount(1);
+    }
+  }, []);
 
-  // useEffect(() => {
-  //   const getVariants = allItems => {
-  //     const allItemsArr = [];
-  //     allItems.map(row => {
-  //       if (row.variant_code === screenTab) {
-  //         if (!allItemsArr.includes(row.variant_code)) {
-  //           allItemsArr.push(row);
-  //         }
-  //       }
-  //     });
-  //     setNewItem(allItemsArr);
-  //   };
-  //   getVariants(itemsAndVariants);
-  // }, [itemsAndVariants, screenTab]);
+  useEffect(() => {
+    props.getDetailItemVariant(params, variant[0]);
+  }, [params, variant[0]]);
 
   useEffect(() => {
     if (variant) {
@@ -56,6 +44,20 @@ const ProductDetail = props => {
   useEffect(() => {
     props.getItemsAndVariants(params);
   }, []);
+
+  console.log(props.cart);
+
+  const onIncrease = () => {
+    if (amount !== variantDetail[0].quantity) {
+      setAmount(amount + 1);
+    }
+  };
+
+  const onDecrease = () => {
+    if (variantDetail[0].quantity >= 0) {
+      setAmount(amount - 1);
+    }
+  };
 
   return (
     variantDetail[0] !== undefined && (
@@ -95,9 +97,24 @@ const ProductDetail = props => {
             <Text style={styles.price}>IDR {variantDetail[0].final_price}</Text>
           </View>
           <TouchableOpacity
-            onPress={() => handleAddItem(variantDetail[0])}
+            onPress={() => handleAddItem(variantDetail[0], amount)}
             style={styles.shoppingCart}>
             <Icon style={styles.icon} name="shopping-cart" />
+          </TouchableOpacity>
+        </View>
+        <View style={styles.amountContainer}>
+          <TouchableOpacity
+            disabled={amount === 1}
+            onPress={onDecrease}
+            style={styles.primaryBtn}>
+            <Text style={styles.primaryAmount}>-</Text>
+          </TouchableOpacity>
+          <Text style={styles.primaryAmount}>{amount}</Text>
+          <TouchableOpacity
+            disabled={amount > variantDetail[0].quantity}
+            onPress={onIncrease}
+            style={styles.primaryBtn}>
+            <Text style={styles.primaryAmount}>+</Text>
           </TouchableOpacity>
         </View>
       </View>
@@ -198,6 +215,30 @@ const styles = StyleSheet.create({
     fontSize: 30,
     color: '#362115',
   },
+  amountContainer: {
+    backgroundColor: '#fff',
+    flexDirection: 'row',
+    borderRadius: 10,
+    height: 70,
+    marginTop: 70,
+    marginHorizontal: 50,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  primaryAmount: {
+    fontSize: 30,
+    fontWeight: 'bold',
+    color: '#362115',
+  },
+  primaryBtn: {
+    marginHorizontal: 70,
+    backgroundColor: '#FFBA33',
+    justifyContent: 'center',
+    alignItems: 'center',
+    height: 50,
+    width: 50,
+    borderRadius: 50 / 2,
+  },
 });
 
 const mapStateToProps = state => ({
@@ -208,7 +249,7 @@ const mapStateToProps = state => ({
 const mapDispatchToProps = {
   getItemsAndVariants,
   getDetailItemVariant,
-  addItemsToCart,
+  addItems,
 };
 
 export default connect(mapStateToProps, mapDispatchToProps)(ProductDetail);

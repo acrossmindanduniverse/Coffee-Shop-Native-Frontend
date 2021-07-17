@@ -1,14 +1,27 @@
 const initialState = {
+  onAuth: false,
   data: {},
   info: null,
+  signUpErrMsg: '',
   errMsg: '',
 };
 
 const auth = (state = initialState, action) => {
   switch (action.type) {
+    case 'TOGGLE_AUTH': {
+      return {
+        onAuth: !state.onAuth,
+      };
+    }
     case 'AUTH_SIGNUP': {
       return {
         ...state,
+      };
+    }
+    case 'AUTH_SIGNUP_REJECTED': {
+      return {
+        ...state,
+        signUpErrMsg: action.err,
       };
     }
     case 'AUTH_SIGNIN': {
@@ -16,6 +29,19 @@ const auth = (state = initialState, action) => {
         ...state,
         data: action.payload.data,
         info: action.payload,
+      };
+    }
+    case 'AUTH_SIGNOUT': {
+      return {
+        ...state,
+        onAuth: false,
+        info: null,
+      };
+    }
+    case 'ERROR_DEFAULT': {
+      return {
+        ...state,
+        errMsg: '',
       };
     }
     case 'AUTH_SIGNIN_REJECTED': {
@@ -27,6 +53,7 @@ const auth = (state = initialState, action) => {
     default: {
       return {
         ...state,
+        errMsg: '',
       };
     }
   }
