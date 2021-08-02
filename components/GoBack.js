@@ -44,6 +44,7 @@ const styles = StyleSheet.create({
   },
   headerIcon: {
     justifyContent: 'center',
+    marginRight: 510,
   },
   userCoupon: {
     alignItems: 'center',

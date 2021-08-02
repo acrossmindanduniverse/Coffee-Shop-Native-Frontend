@@ -54,6 +54,8 @@ export const authSignIn = (username, password, info) => async dispatch => {
   }
 };
 
-export const authSignOut = () => ({
-  type: 'AUTH_SIGNOUT',
-});
+export const authSignOut = () => dispatch => {
+  dispatch({
+    type: 'AUTH_SIGNOUT',
+  });
+};

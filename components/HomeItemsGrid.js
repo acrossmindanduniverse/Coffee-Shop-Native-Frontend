@@ -1,4 +1,5 @@
-import React from 'react';
+/* eslint-disable react-hooks/exhaustive-deps */
+import React, {useEffect, useState} from 'react';
 import {
   View,
   Text,
@@ -7,27 +8,65 @@ import {
   TouchableOpacity,
   FlatList,
 } from 'react-native';
+import {getItemDefault, getItemsByCategory} from '../src/redux/actions/items';
 import {connect} from 'react-redux';
 
 const HomeItemsGrid = props => {
   const {params} = props.route;
+  const [countPage, setCountPage] = useState(1);
+  const {pageInfo, dataByCategory} = props.items;
+  console.log(props.items, 'items params');
+
+  const handleCountPage = () => {
+    if (pageInfo.nextPage !== null) {
+      setCountPage(countPage + 1);
+    }
+  };
+
+  const paginate = () => {
+    props.getItemsByCategory(params[1], countPage);
+  };
+
+  useEffect(() => {
+    paginate();
+  }, [countPage]);
+
   return (
     <View style={styles.parent}>
-      <View style={styles.favouriteContainer}>
-        <Text style={styles.favourite}>Choose your favourite</Text>
-        <Text style={styles.category}>{params[0].category_name}</Text>
+      <View>
+        {dataByCategory[0].category_name === 'Favorite Product' ? (
+          <View style={styles.favouriteContainer}>
+            <Text style={styles.favourite}>
+              {dataByCategory[0].category_name}
+            </Text>
+            <Text style={styles.category}>
+              These are our best products, choose yours
+            </Text>
+          </View>
+        ) : (
+          <View style={styles.favouriteContainer}>
+            <Text style={styles.favourite}>Choose your favorite</Text>
+            <Text style={styles.category}>
+              {dataByCategory[0].category_name}
+            </Text>
+          </View>
+        )}
       </View>
       <FlatList
-        data={params}
+        data={dataByCategory}
         style={styles.gridView}
+        onEndReachedThreshold={0.5}
+        onEndReached={handleCountPage}
         numColumns={2}
         renderItem={({item}) => (
           <View style={styles.itemContainer}>
-            <View style={styles.itemInfo}>
+            <TouchableOpacity
+              onPress={() => props.navigation.navigate('detail', item.id)}
+              style={styles.itemInfo}>
               <Image style={styles.picture} source={{uri: `${item.picture}`}} />
               <Text style={styles.itemName}>{item.name}</Text>
               <Text style={styles.itemPrice}>IDR {item.price}</Text>
-            </View>
+            </TouchableOpacity>
           </View>
         )}
       />
@@ -36,12 +75,11 @@ const HomeItemsGrid = props => {
 };
 
 const styles = StyleSheet.create({
-  // parent: {
-  //   flex: 1,
-  // },
+  parent: {
+    marginVertical: 40,
+  },
   favouriteContainer: {
     alignItems: 'center',
-    marginVertical: 50,
   },
   gridView: {
     marginHorizontal: 30,
@@ -52,6 +90,7 @@ const styles = StyleSheet.create({
   },
   category: {
     color: 'rgba(106, 64, 41, 1)',
+    textAlign: 'center',
     fontWeight: 'bold',
     fontSize: 40,
   },
@@ -86,8 +125,11 @@ const styles = StyleSheet.create({
     fontSize: 17,
   },
 });
+
 const mapStateToProps = state => ({
   items: state.items,
 });
 
-export default connect(mapStateToProps)(HomeItemsGrid);
+const mapDispatchToProps = {getItemsByCategory, getItemDefault};
+
+export default connect(mapStateToProps, mapDispatchToProps)(HomeItemsGrid);

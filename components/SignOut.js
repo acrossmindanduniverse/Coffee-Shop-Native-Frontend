@@ -3,7 +3,6 @@ import {View, Text, TouchableOpacity, StyleSheet} from 'react-native';
 import {connect} from 'react-redux';
 import {authSignOut} from '../src/redux/actions/auth';
 import FontAwesome from 'react-native-vector-icons/FontAwesome';
-// long-arrow-right
 
 const SignOut = props => {
   const handleSignOut = () => {
@@ -29,7 +28,7 @@ const styles = StyleSheet.create({
   btnSignOut: {
     flexDirection: 'row',
     marginVertical: 50,
-    marginLeft: 35,
+    marginLeft: 40,
   },
   icon: {
     color: '#6A4029',

@@ -13,10 +13,24 @@ import EvillCons from 'react-native-vector-icons/EvilIcons';
 import FontAwesome from 'react-native-vector-icons/FontAwesome';
 import {addItems} from '../redux/actions/cart';
 import {connect} from 'react-redux';
-import NoOrder from '../../components/NoOrder';
+// import NoOrderBg from '../assets/Group-66.png';
+import NoOrderBg from '../../assets/Group-66.png';
+// import NoOrder from '../../components/NoOrder';
+import {deleteFromCart} from './../redux/actions/items';
 
 const Cart = props => {
-  const {cartItem, items} = props.cart;
+  const {items} = props.cart;
+  const [getCartItem, setGetCartItem] = useState();
+
+  const deleteItem = () => {
+    props.deleteFromCart(getCartItem);
+  };
+
+  useEffect(data => {
+    setGetCartItem(data);
+  }, []);
+
+  console.log(getCartItem, 'test items 123123');
 
   return items.length > 0 ? (
     <View style={styles.parent}>
@@ -30,9 +44,14 @@ const Cart = props => {
           <SwipeListView
             data={items}
             renderItem={(itemData, idx) => {
-              console.log(itemData, 'test');
+              {
+                console.log(itemData[idx], 'test');
+              }
               return (
-                <View key={idx} style={styles.cart}>
+                <View
+                  onTouchMove={() => setGetCartItem(itemData.item)}
+                  key={idx}
+                  style={styles.cart}>
                   <View style={styles.itemImageContainer}>
                     <Image style={styles.itemImage} />
                   </View>
@@ -52,9 +71,11 @@ const Cart = props => {
                 <View style={styles.heartContainer}>
                   <FontAwesome style={styles.heartIcon} name="heart-o" />
                 </View>
-                <View style={styles.trashContainer}>
+                <TouchableOpacity
+                  onPress={deleteItem}
+                  style={styles.trashContainer}>
                   <EvillCons style={styles.trashIcon} name="trash" />
-                </View>
+                </TouchableOpacity>
               </View>
             )}
             rightOpenValue={-120}
@@ -69,13 +90,35 @@ const Cart = props => {
       </TouchableOpacity>
     </View>
   ) : (
-    <NoOrder />
+    <View style={styles.parent2}>
+      <ScrollView style={styles.firstContent}>
+        <View style={styles.bgContainer}>
+          <Image source={NoOrderBg} style={styles.NoOrderBg} />
+          <View>
+            <Text style={styles.noOrderText}>No orders yet</Text>
+            <Text style={styles.hitBtn}>
+              Hit the brown button down below to Create an order
+            </Text>
+          </View>
+        </View>
+      </ScrollView>
+      <View style={styles.btnOrder}>
+        <TouchableOpacity
+          onPress={() => props.navigation.navigate('home')}
+          style={styles.btn}>
+          <Text style={styles.orderText}>Start ordering</Text>
+        </TouchableOpacity>
+      </View>
+    </View>
   );
 };
 
 const styles = StyleSheet.create({
   parent: {
     marginVertical: 90,
+  },
+  parent2: {
+    flexDirection: 'column',
     flex: 1,
   },
   cartItem: {
@@ -196,12 +239,44 @@ const styles = StyleSheet.create({
     fontSize: 17,
     textAlign: 'center',
   },
+  firstContent: {
+    top: 230,
+    height: '100%',
+  },
+  bgContainer: {
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  noOrderText: {
+    fontWeight: 'bold',
+    marginTop: 38,
+    textAlign: 'center',
+    fontSize: 40,
+  },
+  hitBtn: {
+    fontSize: 25,
+    textAlign: 'center',
+  },
+  btn: {
+    height: 70,
+    backgroundColor: '#6A4029',
+    borderRadius: 20,
+    marginHorizontal: 50,
+    justifyContent: 'center',
+    marginBottom: 41,
+  },
+  orderText: {
+    fontSize: 20,
+    textAlign: 'center',
+    color: '#fff',
+    fontWeight: 'bold',
+  },
 });
 
 const mapStateToProps = state => ({
   cart: state.cart,
 });
 
-const mapDispatchToProps = {addItems};
+const mapDispatchToProps = {addItems, deleteFromCart};
 
 export default connect(mapStateToProps, mapDispatchToProps)(Cart);

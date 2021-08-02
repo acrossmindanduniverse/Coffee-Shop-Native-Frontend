@@ -1,4 +1,4 @@
-import React from 'react';
+import React, {useEffect, useState} from 'react';
 import {
   View,
   Text,
@@ -7,75 +7,89 @@ import {
   StyleSheet,
   TouchableOpacity,
 } from 'react-native';
+import {getUserSigned} from '../redux/actions/user';
 import Chevron from 'react-native-vector-icons/Entypo';
 import defaultImage from '../../assets/plate-and-cup.png';
 import {connect} from 'react-redux';
+import {API_URL} from '@env';
 
 const Profile = props => {
-  const {userData} = props.auth.info;
+  const {userData, refreshToken} = props.auth.info;
+  const user = props.user.user[0];
+
+  useEffect(() => {
+    props.getUserSigned(refreshToken);
+  }, [userData]);
+
+  console.log(props);
+
   return (
-    <View style={styles.parent}>
-      <Text style={styles.myProfileText}>My Profile</Text>
-      <View style={styles.infoText}>
-        <Text style={styles.infoText1}>Your Information</Text>
-        <TouchableOpacity
-          onPress={() => props.navigation.navigate('editProfile')}>
-          <Text style={styles.infoText2}>edit</Text>
-        </TouchableOpacity>
-      </View>
-      <View style={styles.editProfileContainer}>
-        <View style={styles.editProfileContent}>
-          <View>
-            <Image
-              style={styles.image}
-              source={
-                {uri: userData.picture} ? {uri: userData.picture} : defaultImage
-              }
-            />
-          </View>
-          <View style={styles.editProfile}>
-            <Text style={styles.primaryText}>{userData.name}</Text>
-            <SafeAreaView>
-              <Text style={styles.primaryText}>{userData.username}</Text>
-              <Text style={styles.primaryText}>{userData.phone_number}</Text>
-              <Text style={styles.primaryText}>{userData.user_address}</Text>
-            </SafeAreaView>
+    user !== undefined && (
+      <View style={styles.parent}>
+        <Text style={styles.myProfileText}>My Profile</Text>
+        <View style={styles.infoText}>
+          <Text style={styles.infoText1}>Your Information</Text>
+          <TouchableOpacity
+            onPress={() => props.navigation.navigate('editProfile')}>
+            <Text style={styles.infoText2}>edit</Text>
+          </TouchableOpacity>
+        </View>
+        <View style={styles.editProfileContainer}>
+          <View style={styles.editProfileContent}>
+            <View>
+              <Image
+                style={styles.image}
+                source={
+                  {uri: user.picture}
+                    ? {uri: `${API_URL}${user.picture}`}
+                    : defaultImage
+                }
+              />
+            </View>
+            <View style={styles.editProfile}>
+              <Text style={styles.primaryText}>{user.name}</Text>
+              <SafeAreaView>
+                <Text style={styles.primaryText}>{user.username}</Text>
+                <Text style={styles.primaryText}>{user.phone_number}</Text>
+                <Text style={styles.primaryText}>{user.user_address}</Text>
+              </SafeAreaView>
+            </View>
           </View>
         </View>
-      </View>
-      <View>
-        <View style={styles.profileMenuContainer}>
-          <View style={styles.profileMenu}>
-            <Text style={styles.orderText}>Order History</Text>
-            <TouchableOpacity
-              onPress={() => props.navigation.navigate('history')}>
+        <View>
+          <View style={styles.profileMenuContainer}>
+            <View style={styles.profileMenu}>
+              <Text style={styles.orderText}>Order History</Text>
+              <TouchableOpacity
+                onPress={() => props.navigation.navigate('history')}>
+                <Chevron style={styles.chevronRight} name="chevron-right" />
+              </TouchableOpacity>
+            </View>
+          </View>
+          <View style={styles.profileMenuContainer}>
+            <View style={styles.profileMenu}>
+              <Text style={styles.orderText}>Change Password</Text>
               <Chevron style={styles.chevronRight} name="chevron-right" />
-            </TouchableOpacity>
+            </View>
           </View>
-        </View>
-        <View style={styles.profileMenuContainer}>
-          <View style={styles.profileMenu}>
-            <Text style={styles.orderText}>Change Password</Text>
-            <Chevron style={styles.chevronRight} name="chevron-right" />
+          <View style={styles.profileMenuContainer}>
+            <View style={styles.profileMenu}>
+              <Text style={styles.orderText}>FAQ</Text>
+              <Chevron style={styles.chevronRight} name="chevron-right" />
+            </View>
           </View>
-        </View>
-        <View style={styles.profileMenuContainer}>
-          <View style={styles.profileMenu}>
-            <Text style={styles.orderText}>FAQ</Text>
-            <Chevron style={styles.chevronRight} name="chevron-right" />
+          <View style={styles.profileMenuContainer}>
+            <View style={styles.profileMenu}>
+              <Text style={styles.orderText}>Help</Text>
+              <Chevron style={styles.chevronRight} name="chevron-right" />
+            </View>
           </View>
+          <TouchableOpacity style={styles.saveChangeBtn}>
+            <Text style={styles.saveChangeText}>Save Change</Text>
+          </TouchableOpacity>
         </View>
-        <View style={styles.profileMenuContainer}>
-          <View style={styles.profileMenu}>
-            <Text style={styles.orderText}>Help</Text>
-            <Chevron style={styles.chevronRight} name="chevron-right" />
-          </View>
-        </View>
-        <TouchableOpacity style={styles.saveChangeBtn}>
-          <Text style={styles.saveChangeText}>Save Change</Text>
-        </TouchableOpacity>
       </View>
-    </View>
+    )
   );
 };
 
@@ -114,6 +128,7 @@ const styles = StyleSheet.create({
   image: {
     width: 90,
     height: 90,
+    resizeMode: 'cover',
     backgroundColor: '#000',
     borderRadius: 90 / 2,
   },
@@ -163,6 +178,9 @@ const styles = StyleSheet.create({
 
 const mapStateToProps = state => ({
   auth: state.auth,
+  user: state.user,
 });
 
-export default connect(mapStateToProps)(Profile);
+const mapDispatchToProps = {getUserSigned};
+
+export default connect(mapStateToProps, mapDispatchToProps)(Profile);

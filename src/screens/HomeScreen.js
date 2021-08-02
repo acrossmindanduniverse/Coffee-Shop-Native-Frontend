@@ -18,6 +18,7 @@ import {
   getItemsCategory,
   getItemsByCategory,
   searchItems,
+  getItemDefault,
 } from '../redux/actions/items';
 
 const HomeScreen = props => {
@@ -35,7 +36,6 @@ const HomeScreen = props => {
     });
     setCategoryName(newCategoryName);
   };
-  console.log(categoryName);
 
   const handleTabTouch = tabComp => {
     setScreenTab(tabComp);
@@ -48,20 +48,17 @@ const HomeScreen = props => {
       props.navigation.navigate('searchItems', searchData);
     }
   };
-  console.log(searchItemsData);
 
   useEffect(() => {
     mapAllCategoryName(data);
   }, [data]);
 
-  console.log(props.descriptors, 'test');
-
   useEffect(() => {
-    if (categoryName[0]) {
-      setScreenTab(categoryName[0]);
-      props.getItemsByCategory(categoryName[0]);
+    if (categoryName[3]) {
+      setScreenTab(categoryName[3]);
+      props.getItemsByCategory(categoryName[3]);
     }
-  }, [categoryName[0]]);
+  }, [categoryName[3]]);
 
   useEffect(() => {
     props.getItemsCategory();
@@ -81,7 +78,7 @@ const HomeScreen = props => {
               <Icon style={styles.icon} name="search1" />
             </View>
             <TextInput
-              onTouchStart={e => console.log(e, 'search event')}
+              onTouchStart={() => props.navigation.navigate('searchItems')}
               style={styles.searchInput}
               placeholder="Search"
               onChangeText={values => setSearch(values)}
@@ -162,7 +159,9 @@ const HomeScreen = props => {
         </ScrollView>
         <TouchableOpacity
           style={styles.seeMore}
-          onPress={() => props.navigation.navigate('items', dataByCategory)}>
+          onPress={() =>
+            props.navigation.navigate('items', [dataByCategory, screenTab])
+          }>
           <Text> </Text>
           <Text style={styles.seeMoreText}>See more</Text>
         </TouchableOpacity>
@@ -176,9 +175,12 @@ const HomeScreen = props => {
               style={styles.productCard}
               key={index}>
               <View>
-                {console.log(item.picture)}
+                {console.log(item.picture, 'test')}
                 <Image source={{uri: `${item.picture}`}} style={styles.image} />
                 <Text style={styles.primaryFontBold}>{item.name}</Text>
+                <Text style={styles.price}>
+                  IDR {Number(item.price).toLocaleString('ind')}
+                </Text>
               </View>
             </TouchableOpacity>
           ))}
@@ -232,7 +234,6 @@ const styles = StyleSheet.create({
     backgroundColor: '#fff',
     elevation: 2,
     borderRadius: 40,
-    height: 70,
     width: 350,
   },
   iconContainer: {
@@ -274,8 +275,8 @@ const styles = StyleSheet.create({
   },
   productCard: {
     backgroundColor: '#fff',
-    width: 250,
-    height: 270,
+    width: 300,
+    height: 300,
     margin: 30,
     marginTop: 80,
     borderRadius: 30,
@@ -286,13 +287,21 @@ const styles = StyleSheet.create({
     backgroundColor: 'grey',
     borderRadius: 20,
     marginTop: -60,
-    width: 168,
-    height: 189,
+    width: 250,
+    resizeMode: 'cover',
+    height: 250,
   },
   primaryFontBold: {
-    fontWeight: 'bold',
     textAlign: 'center',
+    color: 'rgba(106, 64, 41, 1)',
+    fontFamily: 'Poppins-Bold',
     fontSize: 20,
+  },
+  price: {
+    fontSize: 25,
+    fontFamily: 'Poppins-Bold',
+    color: 'rgba(106, 64, 41, 1)',
+    textAlign: 'center',
   },
   footer: {
     backgroundColor: 'transparent',
@@ -311,7 +320,13 @@ const styles = StyleSheet.create({
 
 const mapStateToProps = state => ({
   items: state.items,
+  auth: state.auth,
 });
-const mapDispatchToProps = {getItemsCategory, getItemsByCategory, searchItems};
+const mapDispatchToProps = {
+  getItemsCategory,
+  getItemsByCategory,
+  searchItems,
+  getItemDefault,
+};
 
 export default connect(mapStateToProps, mapDispatchToProps)(HomeScreen);

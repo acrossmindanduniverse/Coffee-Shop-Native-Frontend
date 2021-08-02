@@ -1,4 +1,4 @@
-import React from 'react';
+import React, {useEffect} from 'react';
 import {connect} from 'react-redux';
 import {
   View,
@@ -8,13 +8,21 @@ import {
   TextInput,
   SafeAreaView,
 } from 'react-native';
+import {getUserSigned} from '../redux/actions/user';
 
 const DeliveryMethod = props => {
-  const {userData} = props.auth.info;
+  const {refreshToken} = props.auth.info;
+  const user = props.user.user[0];
   const {items} = props.cart;
   const newItems = items.map(e => e.amount);
   const addItems = newItems.map(e => e.final_price);
   const total = addItems.reduce((acc, curr) => acc + curr);
+
+  console.log(user.user_address, 'delivery method');
+
+  useEffect(() => {
+    props.getUserSigned(refreshToken);
+  }, [refreshToken]);
 
   console.log(addItems.reduce((acc, curr) => acc + curr));
   return (
@@ -78,7 +86,7 @@ const DeliveryMethod = props => {
           <Text style={styles.primaryText}>Cost</Text>
           <Text style={styles.primaryText}>IDR {total}</Text>
         </View>
-        {userData.user_address.length > 0 ? (
+        {user.user_address !== '' ? (
           <TouchableOpacity
             style={styles.confirmBtn}
             onPress={() => props.navigation.navigate('payment')}>
@@ -252,6 +260,9 @@ const styles = StyleSheet.create({
 const mapStateToProps = state => ({
   cart: state.cart,
   auth: state.auth,
+  user: state.user,
 });
 
-export default connect(mapStateToProps)(DeliveryMethod);
+const mapDispatchToProps = {getUserSigned};
+
+export default connect(mapStateToProps, mapDispatchToProps)(DeliveryMethod);

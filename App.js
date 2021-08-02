@@ -1,4 +1,4 @@
-import React from 'react';
+import React, {useState, useEffect} from 'react';
 import {createStackNavigator} from '@react-navigation/stack';
 import {TouchableOpacity, StyleSheet, View, Text, FlatList} from 'react-native';
 import {NavigationContainer} from '@react-navigation/native';
@@ -25,23 +25,13 @@ import {connect} from 'react-redux';
 import UserHome from './components/UserHome';
 import SignOut from './components/SignOut';
 import Promo from './src/screens/Promo';
-import IonIcons from 'react-native-vector-icons/Ionicons';
+import Ionicons from 'react-native-vector-icons/Ionicons';
 import AntDesign from 'react-native-vector-icons/AntDesign';
 import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
+import SplashScreen from './components/SplashScreen';
 
 const Drawer = createDrawerNavigator();
 const Stack = createStackNavigator();
-
-const DashboardHeader = props => {
-  return (
-    <TouchableOpacity style={styles.barsContainer}>
-      <Icons name="bars" style={styles.bars} />
-      <TouchableOpacity onPress={() => props.navigation.navigaste('cart')}>
-        <AntDesign name="shoppingcart" style={styles.bars} />
-      </TouchableOpacity>
-    </TouchableOpacity>
-  );
-};
 
 const PictureSize = 130;
 
@@ -142,9 +132,17 @@ const PromoStack = () => {
     </Stack.Navigator>
   );
 };
-const MainStack = () => {
+const MainStack = props => {
+  console.log(props, 'test auth for main stack');
   return (
     <Stack.Navigator mode="modal">
+      <Stack.Screen
+        component={SplashScreen}
+        name="splash"
+        options={{
+          headerShown: false,
+        }}
+      />
       <Stack.Screen
         component={HomeScreen}
         name="home"
@@ -249,40 +247,84 @@ const AuthStack = () => {
   );
 };
 
+const DashboardHeader = props => {
+  return (
+    <TouchableOpacity style={styles.barsContainer}>
+      <Icons name="bars" style={styles.bars} />
+      <TouchableOpacity onPress={() => props.navigation.navigate('cart')}>
+        <AntDesign name="shoppingcart" style={styles.bars} />
+      </TouchableOpacity>
+    </TouchableOpacity>
+  );
+};
+
 const DrawerContent = props => {
   const menuItem = Object.keys(props.descriptors);
   const renderMenu = menuItem.map(
     item => props.descriptors[item].options.title,
   );
-  console.log(props);
   return (
-    <View style={drawerContent.parent}>
-      <View style={styles.content}>
-        <UserHome />
-        <FlatList
-          style={drawerContent.menu}
-          data={renderMenu}
-          renderItem={({item, index}) => (
-            <TouchableOpacity
-              onPress={() =>
-                props.navigation.navigate(menuItem[index].split('-')[0])
-              }>
-              <Text style={drawerContent.menuItem}>{item}</Text>
-            </TouchableOpacity>
-          )}
-          keyExtractor={(item, index) => String(index)}
-          ItemSeparatorComponent={() => (
-            <View style={drawerContent.menuSeparator} />
-          )}
-        />
-        <SignOut />
+    props.state.routeNames[0] !== 'auth' && (
+      <View style={drawerContent.parent}>
+        <View style={styles.content}>
+          <UserHome />
+          <FlatList
+            style={drawerContent.menu}
+            data={renderMenu}
+            renderItem={({item, index}) => (
+              <TouchableOpacity
+                style={styles.navigation}
+                onPress={() =>
+                  props.navigation.navigate(menuItem[index].split('-')[0])
+                }>
+                {item === 'Home' && (
+                  <AntDesign name="home" style={styles.icon} />
+                )}
+                {item === 'Profile' && (
+                  <MaterialIcons name="person-outline" style={styles.icon} />
+                )}
+                {item === 'Orders' && (
+                  <AntDesign name="shoppingcart" style={styles.icon} />
+                )}
+                {item === 'Promo' && (
+                  <Ionicons name="pricetag-outline" style={styles.icon} />
+                )}
+                {item === 'All Menu' && (
+                  <MaterialIcons name="restaurant-menu" style={styles.icon} />
+                )}
+                {item === 'Privacy Policy' && (
+                  <AntDesign name="lock" style={styles.icon} />
+                )}
+                {item === 'Security' && (
+                  <MaterialIcons name="security" style={styles.icon} />
+                )}
+                <Text style={drawerContent.menuItem}>{item}</Text>
+              </TouchableOpacity>
+            )}
+            keyExtractor={(_item, index) => String(index)}
+            ItemSeparatorComponent={() => (
+              <View style={drawerContent.menuSeparator} />
+            )}
+          />
+          <SignOut />
+        </View>
       </View>
-    </View>
+    )
   );
 };
 
 const App = props => {
+  const [openDrawer, setOpenDrawer] = useState(false);
   const {info} = props.auth;
+
+  const handleOpenDrawer = () => {
+    setOpenDrawer(true);
+  };
+
+  console.log(info, 'debug info');
+
+  console.log(openDrawer, 'test open');
+
   return (
     <NavigationContainer>
       <Drawer.Navigator
@@ -298,13 +340,6 @@ const App = props => {
             <Drawer.Screen
               options={{
                 title: 'Profile',
-                drawerIcon: () => (
-                  <IonIcons
-                    name="md-person-circle-outline"
-                    size={20}
-                    color={'#6A4029'}
-                  />
-                ),
               }}
               name="profile"
               component={ProfileStack}
@@ -312,14 +347,6 @@ const App = props => {
             <Drawer.Screen
               options={{
                 title: 'Orders',
-                drawerIcon: () => (
-                  <AntDesign
-                    name="shoppingcart"
-                    size={30}
-                    style={{width: 24}}
-                    color={'#6A4029'}
-                  />
-                ),
               }}
               name="cart"
               component={CartStack}
@@ -332,13 +359,6 @@ const App = props => {
             <Drawer.Screen
               options={{
                 title: 'All Menu',
-                drawerIcon: () => (
-                  <MaterialIcons
-                    name="restaurant-menu"
-                    size={20}
-                    color={'#6A4029'}
-                  />
-                ),
               }}
               name="allMenu"
               component={AllMenuStack}
@@ -346,13 +366,6 @@ const App = props => {
             <Drawer.Screen
               options={{
                 title: 'Privacy Policy',
-                drawerIcon: () => (
-                  <IonIcons
-                    name="newspaper-outline privacy"
-                    size={20}
-                    color={'#6A4029'}
-                  />
-                ),
               }}
               name="privacyAndPolicy"
               component={PrivacyPolicyStack}
@@ -360,9 +373,6 @@ const App = props => {
             <Drawer.Screen
               options={{
                 title: 'Security',
-                drawerIcon: () => (
-                  <MaterialIcons name="security" size={20} color={'#6A4029'} />
-                ),
               }}
               name="security"
               component={SecurityStack}
@@ -390,6 +400,14 @@ const styles = StyleSheet.create({
   bars: {
     color: '#6A4029',
     fontSize: 30,
+  },
+  navigation: {
+    flexDirection: 'row',
+  },
+  icon: {
+    color: '#6A4029',
+    fontSize: 30,
+    marginRight: 15,
   },
 });
 
@@ -444,4 +462,4 @@ const mapStateToProps = state => ({
   auth: state.auth,
 });
 
-export default connect(mapStateToProps)(App, DrawerContent);
+export default connect(mapStateToProps)(App);

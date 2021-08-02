@@ -1,6 +1,13 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 import React, {useEffect, useState} from 'react';
-import {View, Text, StyleSheet, TouchableOpacity, FlatList} from 'react-native';
+import {
+  View,
+  Text,
+  StyleSheet,
+  TouchableOpacity,
+  FlatList,
+  Image,
+} from 'react-native';
 import Icon from 'react-native-vector-icons/FontAwesome';
 import {connect} from 'react-redux';
 import {addItems} from '../redux/actions/cart';
@@ -8,6 +15,7 @@ import {
   getItemsAndVariants,
   getDetailItemVariant,
 } from '../redux/actions/items';
+import {API_URL} from '@env';
 
 const ProductDetail = props => {
   const {params} = props.route;
@@ -20,6 +28,8 @@ const ProductDetail = props => {
     props.getDetailItemVariant(id, tab);
     setScreenTab(tab);
   };
+
+  console.log('test');
 
   const handleAddItem = (data, data2) => {
     props.addItems(data, data2);
@@ -59,6 +69,8 @@ const ProductDetail = props => {
     }
   };
 
+  console.log(itemsAndVariants[1], 'test');
+
   return (
     variantDetail[0] !== undefined && (
       <View style={styles.parent}>
@@ -66,7 +78,11 @@ const ProductDetail = props => {
           <View style={styles.itemContainer}>
             <View style={styles.imageContainer}>
               <View style={styles.imageParent}>
-                <View style={styles.image} />
+                {console.log(variantDetail[0].picture, 'picture')}
+                <Image
+                  style={styles.image}
+                  source={{uri: `${itemsAndVariants[1].picture}`}}
+                />
                 <Text style={styles.itemText}>{variantDetail[0].name}</Text>
                 <Text style={styles.deliveryInfo}>
                   {variantDetail[0].delivery_on}
@@ -94,7 +110,9 @@ const ProductDetail = props => {
         </View>
         <View style={styles.footer}>
           <View style={styles.priceContainer}>
-            <Text style={styles.price}>IDR {variantDetail[0].final_price}</Text>
+            <Text style={styles.price}>
+              IDR {Number(variantDetail[0].final_price).toLocaleString('ind')}
+            </Text>
           </View>
           <TouchableOpacity
             onPress={() => handleAddItem(variantDetail[0], amount)}

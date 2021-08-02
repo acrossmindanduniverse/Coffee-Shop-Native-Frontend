@@ -1,5 +1,5 @@
 /* eslint-disable react-hooks/exhaustive-deps */
-import React, {useEffect} from 'react';
+import React, {useEffect, useState} from 'react';
 import {
   View,
   Text,
@@ -7,7 +7,7 @@ import {
   ImageBackground,
   StyleSheet,
   TouchableOpacity,
-  ScrollView,
+  ActivityIndicator,
 } from 'react-native';
 import signInImg from '../../assets/sign-in.png';
 import Icon from 'react-native-vector-icons/FontAwesome';
@@ -17,12 +17,7 @@ import {authSignIn, errorDefault} from '../redux/actions/auth';
 
 const SignIn = props => {
   const {info, errMsg} = props.auth;
-  useEffect(() => {
-    if (info !== null) {
-      props.navigation.navigate('home');
-    }
-  }, []);
-
+  const [spinner, setSpinner] = useState(false);
   useEffect(() => {
     if (errMsg !== '') {
       props.errorDefault();
@@ -37,7 +32,14 @@ const SignIn = props => {
         style={styles.image}
         source={signInImg}
         resizeMode="cover">
-        <ScrollView>
+        {spinner && (
+          <View style={styles.customAlertContainer}>
+            <View marginTop={25}>
+              <ActivityIndicator size="large" color="#fff" />
+            </View>
+          </View>
+        )}
+        <View style={styles.signInContainer}>
           <Text style={styles.errorMessage}>{props.auth.errMsg}</Text>
           <Text style={styles.signIn}>Sign In</Text>
           <Formik
@@ -48,7 +50,7 @@ const SignIn = props => {
             }}
             onSubmit={values => props.authSignIn(values)}>
             {({handleChange, handleBlur, handleSubmit, values}) => (
-              <View style={styles.signInContainer}>
+              <View style={styles.formContent}>
                 <View>
                   <TextInput
                     style={styles.signInForm}
@@ -96,7 +98,7 @@ const SignIn = props => {
               </View>
             )}
           </Formik>
-        </ScrollView>
+        </View>
       </ImageBackground>
     </View>
   );
@@ -107,6 +109,13 @@ const styles = StyleSheet.create({
     backgroundColor: 'rgba(0, 0, 0, 0.3)',
     flex: 1,
   },
+  customAlertContainer: {
+    position: 'absolute',
+    width: '100%',
+    zIndex: 1,
+    backgroundColor: '#000000a0',
+    height: '100%',
+  },
   image: {
     height: '100%',
   },
@@ -116,7 +125,11 @@ const styles = StyleSheet.create({
     fontSize: 20,
   },
   signInContainer: {
-    marginTop: 260,
+    justifyContent: 'flex-end',
+    height: '100%',
+  },
+  formContent: {
+    marginBottom: 30,
   },
   signIn: {
     fontSize: 70,

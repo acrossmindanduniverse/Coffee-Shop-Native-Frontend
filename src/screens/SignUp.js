@@ -7,24 +7,64 @@ import {
   StyleSheet,
   TextInput,
   TouchableOpacity,
-  ScrollView,
+  ActivityIndicator,
 } from 'react-native';
 import {signUpSchema} from '../../components/validationSchema';
 import Icon from 'react-native-vector-icons/FontAwesome';
 import image from '../../assets/sign-up.png';
 import {connect} from 'react-redux';
 import {authSignUp, errorDefault} from '../redux/actions/auth';
+import AntDesign from 'react-native-vector-icons/AntDesign';
 
 // useEffect(() => {
 
 // }, []);
 
 const SignUp = props => {
-  console.log(props.auth);
+  const [customAlert, setCustomAlert] = useState(false);
+  const [spinner, setSpinner] = useState(false);
+  console.log(signUpSchema, 'validation');
+  const handleSignUp = data => {
+    props.authSignUp(data);
+    if (data !== null || data !== undefined) {
+      setSpinner(true);
+    }
+  };
+  //user92920@mail.com
+
+  useEffect(() => {
+    console.log(spinner, 'spinner test');
+    if (spinner) {
+      setTimeout(() => {
+        setCustomAlert(true);
+        setSpinner(false);
+      }, 2000);
+    } else {
+      setTimeout(() => {
+        setCustomAlert(false);
+      }, 2000);
+    }
+  }, [spinner, customAlert]);
+
   return (
     <View style={styles.parent}>
       <ImageBackground style={styles.image} source={image} resizeMode="cover">
-        <ScrollView>
+        {spinner && (
+          <View style={styles.customAlertContainer}>
+            <View marginTop={25}>
+              <ActivityIndicator size="large" color="#fff" />
+            </View>
+          </View>
+        )}
+        {customAlert && (
+          <View style={styles.customAlertContainer}>
+            <View style={styles.successContainer}>
+              <AntDesign name="checkcircleo" style={styles.succesText} />
+              <Text style={styles.succesText}>Sign Up Success</Text>
+            </View>
+          </View>
+        )}
+        <View style={styles.signUpContainer}>
           <Text style={styles.signUp}>Sign Up</Text>
           <Formik
             style={styles.input}
@@ -34,9 +74,9 @@ const SignUp = props => {
               phone_number: '',
             }}
             validationSchema={signUpSchema}
-            onSubmit={val => props.authSignUp(val)}>
+            onSubmit={val => handleSignUp(val)}>
             {({errors, handleChange, handleBlur, handleSubmit, values}) => (
-              <View style={styles.signUpContainer}>
+              <View style={styles.formContent}>
                 <View>
                   <Text style={styles.errorMessage}>{errors.username}</Text>
                   <TextInput
@@ -81,7 +121,7 @@ const SignUp = props => {
               </View>
             )}
           </Formik>
-        </ScrollView>
+        </View>
       </ImageBackground>
     </View>
   );
@@ -91,14 +131,42 @@ const styles = StyleSheet.create({
   parent: {
     backgroundColor: 'rgba(0, 0, 0, 0.3)',
     flex: 1,
-    flexDirection: 'column',
+  },
+  customAlertContainer: {
+    position: 'absolute',
+    width: '100%',
+    zIndex: 1,
+    backgroundColor: '#000000a0',
+    height: '100%',
+  },
+  successContainer: {
+    backgroundColor: '#6A4029',
+    alignItems: 'center',
+    marginTop: 25,
+    marginHorizontal: 30,
+    justifyContent: 'center',
+    flexDirection: 'row',
+    borderRadius: 25,
+  },
+  // successContainer1: {
+  //   marginTop: 25,
+  // },
+  succesText: {
+    fontFamily: 'Poppins-Bold',
+    marginHorizontal: 5,
+    fontSize: 18,
+    marginVertical: 20,
+    color: '#fff',
   },
   image: {
     height: '100%',
-    flex: 1,
   },
   signUpContainer: {
-    marginTop: 330,
+    height: '100%',
+    justifyContent: 'flex-end',
+  },
+  formContent: {
+    marginBottom: 180,
   },
   signUp: {
     fontSize: 70,

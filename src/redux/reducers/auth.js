@@ -28,6 +28,7 @@ const auth = (state = initialState, action) => {
       return {
         ...state,
         data: action.payload.data,
+        onAuth: !state.onAuth,
         info: action.payload,
       };
     }
@@ -35,6 +36,7 @@ const auth = (state = initialState, action) => {
       return {
         ...state,
         onAuth: false,
+        data: {},
         info: null,
       };
     }

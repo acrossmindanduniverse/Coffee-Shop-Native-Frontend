@@ -17,21 +17,20 @@ import {getAllTransactions} from '../redux/actions/items';
 const History = props => {
   const {refreshToken, userData} = props.auth.info;
   const [modal, setModal] = useState(false);
+  const [saveItemToDelete, setSaveItemToDelete] = useState();
   const {allTransactions} = props.items;
 
   const showModal = visible => {
     setModal(visible);
   };
 
-  console.log(allTransactions.length, 'items');
+  console.log(saveItemToDelete, 'items');
 
   const handleDelete = () => {
-    props
-      .deleteTransactionHistory(refreshToken, allTransactions[0].id)
-      .then(() => {
-        setModal(false);
-        props.getAllTransactions(refreshToken, userData.id);
-      });
+    props.deleteTransactionHistory(refreshToken, saveItemToDelete).then(() => {
+      setModal(false);
+      props.getAllTransactions(refreshToken, userData.id);
+    });
   };
 
   useEffect(() => {
@@ -46,26 +45,28 @@ const History = props => {
         style={styles.modal}
         transparent={true}
         animationType={'fade'}
-        onRequestClose={() => {
-          setModal(true);
-        }}>
-        <View style={styles.modalContainer}>
-          <View style={styles.customTextContainer}>
-            <Text style={styles.customText}>Are you sure want to delete?</Text>
-          </View>
-          <View style={styles.btnContainer}>
-            <TouchableOpacity
-              style={styles.primaryBtn}
-              onPress={handleDelete}
-              activeOpacity={0.5}>
-              <Text style={styles.primaryText}>Ok</Text>
-            </TouchableOpacity>
-            <TouchableOpacity
-              style={styles.primaryBtn}
-              onPress={() => showModal(false)}
-              activeOpacity={0.5}>
-              <Text style={styles.primaryText}>Cancel</Text>
-            </TouchableOpacity>
+        onRequestClose={() => setModal(true)}>
+        <View style={styles.modalParent}>
+          <View style={styles.modalContainer}>
+            <View style={styles.customTextContainer}>
+              <Text style={styles.customText}>
+                Are you sure want to delete?
+              </Text>
+            </View>
+            <View style={styles.btnContainer}>
+              <TouchableOpacity
+                style={styles.primaryBtn}
+                onPress={handleDelete}
+                activeOpacity={0.5}>
+                <Text style={styles.primaryText}>Ok</Text>
+              </TouchableOpacity>
+              <TouchableOpacity
+                style={styles.primaryBtn}
+                onPress={() => showModal(false)}
+                activeOpacity={0.5}>
+                <Text style={styles.primaryText}>Cancel</Text>
+              </TouchableOpacity>
+            </View>
           </View>
         </View>
       </Modal>
@@ -83,9 +84,10 @@ const History = props => {
                   style={styles.historyWrapper}
                   data={allTransactions}
                   renderItem={(data, rowMap) => {
-                    console.log(data.item.code);
                     return (
-                      <View style={styles.history}>
+                      <View
+                        onTouchMove={() => setSaveItemToDelete(data.item.id)}
+                        style={styles.history}>
                         <View style={styles.itemImageContainer}>
                           <Image style={styles.itemImage} />
                         </View>
@@ -101,7 +103,7 @@ const History = props => {
                       </View>
                     );
                   }}
-                  renderHiddenItem={(data, rowMap) => (
+                  renderHiddenItem={() => (
                     <TouchableOpacity
                       onPress={() => showModal(true)}
                       style={styles.trashCan}>
@@ -131,6 +133,12 @@ const History = props => {
 const styles = StyleSheet.create({
   parent: {
     marginVertical: 90,
+  },
+  modalParent: {
+    position: 'absolute',
+    width: '100%',
+    backgroundColor: '#000000a0',
+    height: '100%',
   },
   modal: {
     position: 'absolute',

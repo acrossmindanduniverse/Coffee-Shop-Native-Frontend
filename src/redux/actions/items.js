@@ -16,16 +16,29 @@ export const getItemsCategory = key => async dispatch => {
   }
 };
 
-export const getItemsByCategory = key => async dispatch => {
+export const getItemsByCategory = (key, page) => async dispatch => {
   try {
-    const {data} = await http().get(`${API_URL}/category?search=${key}`);
-    dispatch({
-      type: 'GET_ITEM_CATEGORY',
-      payload: {
-        items: data.data,
-        pageInfo: data.pageInfo,
-      },
-    });
+    if (!page) {
+      const {data} = await http().get(`${API_URL}/category?search=${key}`);
+      dispatch({
+        type: 'GET_ITEM_CATEGORY',
+        payload: {
+          items: data.data,
+          pageInfo: data.pageInfo,
+        },
+      });
+    } else {
+      const {data} = await http().get(
+        `${API_URL}/category?search=${key}&page=${page}`,
+      );
+      dispatch({
+        type: 'GET_ITEM_CATEGORY_NEXT',
+        payload: {
+          items: data.data,
+          pageInfo: data.pageInfo,
+        },
+      });
+    }
   } catch (err) {
     dispatch({
       type: 'ITEM_NOT_FOUND',
@@ -48,18 +61,24 @@ export const getAllItems = () => async dispatch => {
   }
 };
 
-export const searchItems = (key, page) => async dispatch => {
+export const searchItems = (key, sortBy, sort, page) => async dispatch => {
+  console.log(page, 'test page');
   try {
-    if (!page) {
-      const {data} = await http().get(`${API_URL}/items?search=${key}`);
+    if (page === undefined) {
+      const {data} = await http().get(
+        `${API_URL}/items?search=${key}&sort[${sortBy}]=${sort}`,
+      );
       dispatch({
         type: 'SEARCH_ITEMS',
         payload: {
           items: data.data,
+          pageInfo: data.pageInfo,
         },
       });
     } else {
-      const {data} = await http().get(`${API_URL}/items?search=${key}&${page}`);
+      const {data} = await http().get(
+        `${API_URL}/items?search=${key}&sort[${sortBy}]=${sort}&page=${page}`,
+      );
       dispatch({
         type: 'SEARCH_ITEMS_NEXT',
         payload: {
@@ -71,6 +90,18 @@ export const searchItems = (key, page) => async dispatch => {
   } catch (err) {
     console.log(err);
   }
+};
+
+export const changeSearchState = () => dispatch => {
+  dispatch({
+    type: 'CHANGE_SEARCH_STATE',
+  });
+};
+
+export const getItemDefault = () => dispatch => {
+  dispatch({
+    type: 'ITEM_DEFAULT',
+  });
 };
 
 export const getItemsAndVariants = id => async dispatch => {
@@ -120,4 +151,11 @@ export const getAllTransactions = (token, id) => async dispatch => {
       err: err.response.data.data,
     });
   }
+};
+
+export const deleteFromCart = index => dispatch => {
+  dispatch({
+    type: 'DELETE_FROM_CART',
+    payload: index,
+  });
 };

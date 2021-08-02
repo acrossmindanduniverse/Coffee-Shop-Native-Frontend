@@ -29,6 +29,20 @@ export const updateProfile = (token, id, userData) => async dispatch => {
   }
 };
 
+export const getUserSigned = token => async dispatch => {
+  try {
+    const {data} = await http(token).get(`${API_URL}/user/signed`);
+    dispatch({
+      type: 'GET_USER_SIGNED',
+      payload: {
+        user: data.data,
+      },
+    });
+  } catch (err) {
+    console.log(err);
+  }
+};
+
 export const onToggleBar = () => dispatch => {
   dispatch({
     type: 'TOGGLE_BAR',

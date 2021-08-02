@@ -64,23 +64,25 @@ const Payment = props => {
         onRequestClose={() => {
           showModal(true);
         }}>
-        <View style={styles.modalContainer}>
-          <View style={styles.customTextContainer}>
-            <Text style={styles.customText}>Continue buying?</Text>
-          </View>
-          <View style={styles.btnContainer}>
-            <TouchableOpacity
-              style={styles.primaryBtn}
-              onPress={makeTransaction}
-              activeOpacity={0.5}>
-              <Text style={styles.primaryText2}>Ok</Text>
-            </TouchableOpacity>
-            <TouchableOpacity
-              style={styles.primaryBtn}
-              onPress={() => setModal(false)}
-              activeOpacity={0.5}>
-              <Text style={styles.primaryText2}>Cancel</Text>
-            </TouchableOpacity>
+        <View style={styles.modalParent}>
+          <View style={styles.modalContainer}>
+            <View style={styles.customTextContainer}>
+              <Text style={styles.customText}>Continue buying?</Text>
+            </View>
+            <View style={styles.btnContainer}>
+              <TouchableOpacity
+                style={styles.primaryBtn}
+                onPress={makeTransaction}
+                activeOpacity={0.5}>
+                <Text style={styles.primaryText2}>Ok</Text>
+              </TouchableOpacity>
+              <TouchableOpacity
+                style={styles.primaryBtn}
+                onPress={() => setModal(false)}
+                activeOpacity={0.5}>
+                <Text style={styles.primaryText2}>Cancel</Text>
+              </TouchableOpacity>
+            </View>
           </View>
         </View>
       </Modal>
@@ -222,9 +224,14 @@ const styles = StyleSheet.create({
     backgroundColor: '#362115',
     height: 570,
   },
+  modalParent: {
+    position: 'absolute',
+    width: '100%',
+    backgroundColor: '#000000a0',
+    height: '100%',
+  },
   modalContainer: {
     backgroundColor: '#fff',
-    elevation: 400,
     marginHorizontal: 60,
     marginVertical: 200,
     borderRadius: 20,

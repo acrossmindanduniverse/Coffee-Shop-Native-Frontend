@@ -1,28 +1,39 @@
-import React from 'react';
+import React, {useEffect} from 'react';
 import {View, Text, StyleSheet, Image, TouchableOpacity} from 'react-native';
 import defaultPicture from '../assets/defaultPicture.png';
+import {getUserSigned} from '../src/redux/actions/user';
 import {connect} from 'react-redux';
+import {API_URL} from '@env';
 
 const UserHome = props => {
+  const {refreshToken} = props.auth.info;
+  const user = props.user.user[0];
+
+  useEffect(() => {
+    props.getUserSigned(refreshToken);
+  }, [refreshToken]);
+
+  console.log(props.user.user[0], 'user home');
+
+  console.log(props.user, 'user home 123');
+
   return (
-    props.auth.info !== null && (
+    user !== undefined && (
       <View>
         <View style={styles.profileInfo}>
           <Image
             source={
-              props.auth.info.userData.picture !== null
+              user.picture !== null
                 ? {
-                    uri: `${props.auth.info.userData.picture}`,
+                    uri: `${API_URL}${user.picture}`,
                   }
                 : defaultPicture
             }
             style={styles.profilePicture}
           />
           <View style={styles.userInfo}>
-            <Text style={styles.userName}>{props.auth.info.userData.name}</Text>
-            <Text style={styles.userEmail}>
-              {props.auth.info.userData.username}
-            </Text>
+            <Text style={styles.userName}>{user.name}</Text>
+            <Text style={styles.userEmail}>{user.username}</Text>
           </View>
         </View>
       </View>
@@ -62,6 +73,9 @@ const styles = StyleSheet.create({
 
 const mapStateToProps = state => ({
   auth: state.auth,
+  user: state.user,
 });
 
-export default connect(mapStateToProps)(UserHome);
+const mapDispatchToProps = {getUserSigned};
+
+export default connect(mapStateToProps, mapDispatchToProps)(UserHome);

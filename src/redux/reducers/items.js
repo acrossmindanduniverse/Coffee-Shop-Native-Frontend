@@ -3,7 +3,9 @@ const initialState = {
   dataByCategory: [],
   itemsAndVariants: [],
   allItems: [],
+  deleteFromCart: [],
   searchItemsData: [],
+  changeSearchState: 0,
   variantDetail: [],
   allTransactions: [],
   pageInfo: [],
@@ -32,10 +34,17 @@ const items = (state = initialState, action) => {
         pageInfo: action.payload.pageInfo,
       };
     }
+    case 'CHANGE_SEARCH_STATE': {
+      return {
+        ...state,
+        changeSearchState: action.payload,
+      };
+    }
     case 'SEARCH_ITEMS': {
       return {
         ...state,
         searchItemsData: action.payload.items,
+        pageInfo: action.payload.pageInfo,
       };
     }
     case 'SEARCH_ITEMS_NEXT': {
@@ -45,10 +54,25 @@ const items = (state = initialState, action) => {
         pageInfo: action.payload.pageInfo,
       };
     }
+    case 'GET_ITEM_CATEGORY_NEXT': {
+      return {
+        ...state,
+        dataByCategory: [...state.dataByCategory, ...action.payload.items],
+        pageInfo: action.payload.pageInfo,
+      };
+    }
     case 'ITEM_NOT_FOUND': {
       return {
         ...state,
         errMsg: action.err,
+      };
+    }
+    case 'ITEM_DEFAULT': {
+      return {
+        ...state,
+        pageInfo: [],
+        dataByCategory: [],
+        searchItemsData: [],
       };
     }
     case 'GET_ITEMS_AND_VARIANTS': {
@@ -73,6 +97,22 @@ const items = (state = initialState, action) => {
       return {
         ...state,
         err: action.payload,
+      };
+    }
+    case 'ADD_ITEM_TO_DELETE': {
+      const addItem = {
+        id: action.payload,
+        item: action.payload.index,
+      };
+      return {
+        ...state,
+        items: state.items.concat(addItem),
+      };
+    }
+    case 'DELETE_FROM_CART': {
+      return {
+        ...state,
+        items: state.items.filter(item => item !== action.payload),
       };
     }
     default: {
