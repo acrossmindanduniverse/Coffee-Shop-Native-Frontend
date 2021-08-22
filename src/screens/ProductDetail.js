@@ -15,11 +15,11 @@ import {
   getItemsAndVariants,
   getDetailItemVariant,
 } from '../redux/actions/items';
-import {API_URL} from '@env';
 
 const ProductDetail = props => {
   const {params} = props.route;
   const {itemsAndVariants, variantDetail} = props.items;
+  const [added, setAdded] = useState(false);
   const variant = itemsAndVariants.map(row => row.variant_code);
   const [_, setScreenTab] = useState();
   const [amount, setAmount] = useState(1);
@@ -29,17 +29,19 @@ const ProductDetail = props => {
     setScreenTab(tab);
   };
 
-  console.log('test');
-
   const handleAddItem = (data, data2) => {
     props.addItems(data, data2);
+    setAdded(true);
   };
 
   useEffect(() => {
-    if (handleAddItem) {
+    if (added) {
       setAmount(1);
+      setTimeout(() => {
+        setAdded(false);
+      }, 200);
     }
-  }, []);
+  }, [added]);
 
   useEffect(() => {
     props.getDetailItemVariant(params, variant[0]);
@@ -68,8 +70,6 @@ const ProductDetail = props => {
       setAmount(amount - 1);
     }
   };
-
-  console.log(itemsAndVariants[1], 'test');
 
   return (
     variantDetail[0] !== undefined && (
@@ -120,20 +120,42 @@ const ProductDetail = props => {
             <Icon style={styles.icon} name="shopping-cart" />
           </TouchableOpacity>
         </View>
-        <View style={styles.amountContainer}>
-          <TouchableOpacity
-            disabled={amount === 1}
-            onPress={onDecrease}
-            style={styles.primaryBtn}>
-            <Text style={styles.primaryAmount}>-</Text>
-          </TouchableOpacity>
-          <Text style={styles.primaryAmount}>{amount}</Text>
-          <TouchableOpacity
-            disabled={amount > variantDetail[0].quantity}
-            onPress={onIncrease}
-            style={styles.primaryBtn}>
-            <Text style={styles.primaryAmount}>+</Text>
-          </TouchableOpacity>
+        <View
+          style={{
+            justifyContent: 'center',
+            alignItems: 'center',
+            marginBottom: 40,
+          }}>
+          <View
+            style={{
+              height: 40,
+            }}>
+            {added && (
+              <Text
+                style={{
+                  fontFamily: 'Poppins-Medium',
+                  fontSize: 18,
+                  color: '#fff',
+                }}>
+                Item added to cart
+              </Text>
+            )}
+          </View>
+          <View style={styles.amountContainer}>
+            <TouchableOpacity
+              disabled={amount === 1}
+              onPress={onDecrease}
+              style={styles.primaryBtn}>
+              <Text style={styles.primaryAmount}>-</Text>
+            </TouchableOpacity>
+            <Text style={styles.primaryAmount}>{amount}</Text>
+            <TouchableOpacity
+              disabled={amount > variantDetail[0].quantity}
+              onPress={onIncrease}
+              style={styles.primaryBtn}>
+              <Text style={styles.primaryAmount}>+</Text>
+            </TouchableOpacity>
+          </View>
         </View>
       </View>
     )
@@ -238,7 +260,6 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     borderRadius: 10,
     height: 70,
-    marginTop: 70,
     marginHorizontal: 50,
     alignItems: 'center',
     justifyContent: 'center',

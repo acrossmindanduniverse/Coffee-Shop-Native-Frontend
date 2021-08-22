@@ -1,16 +1,18 @@
 import {http} from '../../helpers/http';
-import {API_URL} from '@env';
+// import {API_URL} from '@env';
 
-export const toggleAuth = () => ({
-  type: 'TOGGLE_AUTH',
-});
+const API_URL = 'http://192.168.244.1:3001';
+
+export const toggleAuth = () => dispatch => {
+  dispatch({
+    type: 'TOGGLE_AUTH',
+  });
+};
 
 export const errorDefault = () => dispatch => {
-  setTimeout(() => {
-    dispatch({
-      type: 'ERROR_DEFAULT',
-    });
-  }, 800);
+  dispatch({
+    type: 'ERROR_DEFAULT',
+  });
 };
 
 export const authSignUp =
@@ -29,11 +31,28 @@ export const authSignUp =
     } catch (err) {
       dispatch({
         type: 'AUTH_SIGNUP_REJECTED',
-        err: err.response.data,
+        error: err.response.data.data,
       });
       console.log(err);
     }
   };
+
+export const registerFcmToken = (token, setData) => async dispatch => {
+  const form = new URLSearchParams();
+  form.append('token', setData.token);
+  try {
+    const {data} = await http(token).post(`${API_URL}/auth/fcm-token`, form);
+    dispatch({
+      type: 'REGISTER_TOKEN',
+      payload: data.data,
+    });
+  } catch (err) {
+    dispatch({
+      type: 'REGISTER_TOKEN_REJECTED',
+      error: err.response.data.data,
+    });
+  }
+};
 
 export const authSignIn = (username, password, info) => async dispatch => {
   try {
@@ -50,6 +69,26 @@ export const authSignIn = (username, password, info) => async dispatch => {
     dispatch({
       type: 'AUTH_SIGNIN_REJECTED',
       err: err.response.data.data,
+    });
+  }
+};
+
+export const authRefreshToken = (token, setData) => async dispatch => {
+  const form = new URLSearchParams();
+  form.append('refreshToken', setData.refreshToken);
+  try {
+    const {data} = await http(token).post(
+      `${API_URL}/auth/refresh-token`,
+      form,
+    );
+    dispatch({
+      type: 'REFRESH_TOKEN',
+      payload: data.data,
+    });
+  } catch (err) {
+    dispatch({
+      type: 'REFRESH_TOKEN_REJECTED',
+      error: err.response.data.data,
     });
   }
 };

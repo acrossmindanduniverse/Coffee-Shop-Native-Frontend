@@ -13,38 +13,47 @@ import {signUpSchema} from '../../components/validationSchema';
 import Icon from 'react-native-vector-icons/FontAwesome';
 import image from '../../assets/sign-up.png';
 import {connect} from 'react-redux';
-import {authSignUp, errorDefault} from '../redux/actions/auth';
+import {authSignUp, errorDefault, toggleAuth} from '../redux/actions/auth';
 import AntDesign from 'react-native-vector-icons/AntDesign';
-
-// useEffect(() => {
-
-// }, []);
 
 const SignUp = props => {
   const [customAlert, setCustomAlert] = useState(false);
+  const {signUpErrMsg, onToggle} = props.auth;
   const [spinner, setSpinner] = useState(false);
-  console.log(signUpSchema, 'validation');
+  const errorMsg = 'username unavailable, please input another one';
+
   const handleSignUp = data => {
     props.authSignUp(data);
-    if (data !== null || data !== undefined) {
-      setSpinner(true);
-    }
   };
-  //user92920@mail.com
 
   useEffect(() => {
-    console.log(spinner, 'spinner test');
+    if (onToggle) {
+      props.errorDefault();
+      setSpinner(true);
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [onToggle]);
+
+  useEffect(() => {
     if (spinner) {
       setTimeout(() => {
-        setCustomAlert(true);
         setSpinner(false);
       }, 2000);
-    } else {
       setTimeout(() => {
-        setCustomAlert(false);
+        setCustomAlert(true);
       }, 2000);
     }
   }, [spinner, customAlert]);
+
+  useEffect(() => {
+    if (customAlert) {
+      setTimeout(() => {
+        setCustomAlert(false);
+        props.navigation.navigate('signIn');
+      }, 1000);
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [customAlert]);
 
   return (
     <View style={styles.parent}>
@@ -66,6 +75,9 @@ const SignUp = props => {
         )}
         <View style={styles.signUpContainer}>
           <Text style={styles.signUp}>Sign Up</Text>
+          {signUpErrMsg === errorMsg && (
+            <Text style={styles.errorMessage}>{errorMsg}</Text>
+          )}
           <Formik
             style={styles.input}
             initialValues={{
@@ -79,6 +91,7 @@ const SignUp = props => {
               <View style={styles.formContent}>
                 <View>
                   <Text style={styles.errorMessage}>{errors.username}</Text>
+                  <Text style={styles.errorMessage}>{errors.password}</Text>
                   <TextInput
                     style={styles.signUpForm}
                     onChangeText={handleChange('username')}
@@ -148,9 +161,6 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     borderRadius: 25,
   },
-  // successContainer1: {
-  //   marginTop: 25,
-  // },
   succesText: {
     fontFamily: 'Poppins-Bold',
     marginHorizontal: 5,
@@ -231,6 +241,6 @@ const mapStateToProps = state => ({
   auth: state.auth,
 });
 
-const mapDispatchToProps = {authSignUp, errorDefault};
+const mapDispatchToProps = {authSignUp, errorDefault, toggleAuth};
 
 export default connect(mapStateToProps, mapDispatchToProps)(SignUp);

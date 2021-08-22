@@ -1,5 +1,6 @@
 const initialState = {
   data: [],
+  itemsToDelete: [],
   dataByCategory: [],
   itemsAndVariants: [],
   allItems: [],
@@ -71,7 +72,6 @@ const items = (state = initialState, action) => {
       return {
         ...state,
         pageInfo: [],
-        dataByCategory: [],
         searchItemsData: [],
       };
     }
@@ -97,22 +97,6 @@ const items = (state = initialState, action) => {
       return {
         ...state,
         err: action.payload,
-      };
-    }
-    case 'ADD_ITEM_TO_DELETE': {
-      const addItem = {
-        id: action.payload,
-        item: action.payload.index,
-      };
-      return {
-        ...state,
-        items: state.items.concat(addItem),
-      };
-    }
-    case 'DELETE_FROM_CART': {
-      return {
-        ...state,
-        items: state.items.filter(item => item !== action.payload),
       };
     }
     default: {

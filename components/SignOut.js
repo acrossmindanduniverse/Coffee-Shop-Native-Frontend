@@ -2,11 +2,13 @@ import React from 'react';
 import {View, Text, TouchableOpacity, StyleSheet} from 'react-native';
 import {connect} from 'react-redux';
 import {authSignOut} from '../src/redux/actions/auth';
+import {getUserDefault} from '../src/redux/actions/user';
 import FontAwesome from 'react-native-vector-icons/FontAwesome';
 
 const SignOut = props => {
   const handleSignOut = () => {
     props.authSignOut();
+    props.getUserDefault();
   };
 
   return (
@@ -37,6 +39,6 @@ const styles = StyleSheet.create({
   },
 });
 
-const mapDispatchToProps = {authSignOut};
+const mapDispatchToProps = {authSignOut, getUserDefault};
 
 export default connect(null, mapDispatchToProps)(SignOut);

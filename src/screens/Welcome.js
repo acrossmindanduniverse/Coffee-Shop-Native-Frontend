@@ -1,4 +1,5 @@
-import React from 'react';
+/* eslint-disable react-hooks/exhaustive-deps */
+import React, {useEffect} from 'react';
 import {
   View,
   Text,
@@ -6,9 +7,17 @@ import {
   ImageBackground,
   StyleSheet,
 } from 'react-native';
+import {authSignOut} from '../redux/actions/auth';
+import {getUserDefault} from '../redux/actions/user';
+import {connect} from 'react-redux';
+import AsyncStorage from '@react-native-community/async-storage';
 import image from '../../assets/girl-checking-phone-during-free-time-1.png';
 
-export default function Welcome(props) {
+const Welcome = props => {
+  useEffect(() => {
+    AsyncStorage.removeItem('persist:auth');
+  }, []);
+
   return (
     <View style={styles.parent}>
       <View style={styles.ImageBackgroundContainer}>
@@ -40,7 +49,7 @@ export default function Welcome(props) {
       </View>
     </View>
   );
-}
+};
 
 const styles = StyleSheet.create({
   parent: {
@@ -97,3 +106,7 @@ const styles = StyleSheet.create({
     fontSize: 17,
   },
 });
+
+const mapDispatchToProps = {authSignOut, getUserDefault};
+
+export default connect(null, mapDispatchToProps)(Welcome);

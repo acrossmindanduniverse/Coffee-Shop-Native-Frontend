@@ -19,6 +19,12 @@ const cart = (state = initialState, action) => {
         items: [...state.items, ...[action.payload]],
       };
     }
+    case 'DELETE_FROM_CART': {
+      return {
+        ...state,
+        items: [...state.items.filter(item => item !== action.payload.item)],
+      };
+    }
     case 'POST_TRANSACTION': {
       return {
         ...state,

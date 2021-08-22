@@ -18,7 +18,7 @@ const NoOrder = props => {
           <View>
             <Text style={styles.noOrderText}>No orders yet</Text>
             <Text style={styles.hitBtn}>
-              Hit the brown button down below to Create an order
+              Hit the brown button down below to create an order
             </Text>
           </View>
         </View>

@@ -9,27 +9,41 @@ import {
   TextInput,
   ScrollView,
   Modal,
+  ActivityIndicator,
 } from 'react-native';
 import Icon from 'react-native-vector-icons/FontAwesome5';
-import {updateProfile, getUserSigned} from '../redux/actions/user';
+import {
+  updateProfile,
+  uploadPicture,
+  getUserSigned,
+  errorDefault,
+} from '../redux/actions/user';
 import {connect} from 'react-redux';
 import {launchImageLibrary, launchCamera} from 'react-native-image-picker';
 import AntDesign from 'react-native-vector-icons/AntDesign';
-// import ImagePicker from 'react-native-image-picker';
 import {authSignOut, authSignIn} from './../redux/actions/auth';
 import {API_URL} from '@env';
+import defaultPicture from '../../assets/defaultPicture.png';
 
 const EditProfile = props => {
-  const {userData, refreshToken} = props.auth.info;
-  const [picture, setPicture] = useState('');
-  const [username, setUsername] = useState(userData.username);
-  const [name, setName] = useState(userData.name);
-  const [phone_number, setPhoneNumber] = useState(userData.phone_number);
-  const [user_address, setUserAddress] = useState(userData);
-  const [modal, setModal] = useState(false);
+  const {token} = props.auth.refreshToken;
+  const {info} = props.auth;
   const user = props.user.user[0];
+  const [picture, setPicture] = useState({
+    picture: '',
+  });
+  const [profile, setProfile] = useState({
+    username: user.username,
+    name: user.name,
+    phone_number: user.phone_number,
+    user_address: user.user_address,
+  });
+  const [modal, setModal] = useState(false);
+  const [spinner, setSpinner] = useState(false);
+  const [successModal, setSuccessModal] = useState(false);
+  const {updateErrMsg, pictureErr, pictureToggle, onToggle} = props.user;
 
-  // const userSigned = props.user.user[0].length > 0 ?
+  console.log(props.user, 'test auth');
 
   const showModal = visible => {
     setModal(visible);
@@ -37,86 +51,181 @@ const EditProfile = props => {
 
   const selectPicture = event => {
     if (!event.didCancel) {
-      setPicture(event.assets[0]);
-      props.getUserSigned(refreshToken);
+      setPicture({
+        ...picture,
+        picture: event.assets[0],
+      });
+      props.getUserSigned(token);
       setModal(false);
     } else {
       console.log('cancel');
     }
   };
 
-  const handeLaunchCamera = event => {
-    if (!event.didCancel) {
-      setPicture(event.assets[0]);
-      props.getUserSigned(refreshToken);
+  const handeLaunchCamera = e => {
+    if (!e.didCancel) {
+      setPicture({
+        ...picture,
+        picture: e.assets[0],
+      });
+      props.getUserSigned(token);
       setModal(false);
     } else {
       console.log('cancel');
     }
-    console.log(event, 'event for camera');
   };
-
-  console.log(props.user, 'signed');
 
   const updateUserData = () => {
-    const setData = {
-      picture,
-      username,
-      name,
-      phone_number,
-      user_address,
-    };
-    props.updateProfile(refreshToken, userData.id, setData);
-    props.getUserSigned(refreshToken);
+    if (picture.picture !== '') {
+      props.uploadPicture(token, picture);
+    } else {
+      props
+        .updateProfile(token, info.id, profile)
+        .then(res => {
+          props.getUserSigned(token);
+          setSpinner(true);
+          props.errorDefault();
+          console.log(res, 'result from component');
+        })
+        .catch(err => {
+          console.log(err, 'error from component');
+        });
+    }
   };
 
   useEffect(() => {
-    props.getUserSigned(refreshToken);
+    if (pictureToggle) {
+      props
+        .updateProfile(token, info.id, profile)
+        .then(res => {
+          props.getUserSigned(token);
+          setSpinner(true);
+          props.errorDefault();
+          console.log(res, 'result from component');
+          return res;
+        })
+        .catch(err => {
+          console.log(err, 'error from component');
+        });
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [pictureToggle, spinner]);
+
+  useEffect(() => {
+    setTimeout(() => {
+      props.errorDefault();
+    }, 200);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  console.log(userData);
+  useEffect(() => {
+    if (onToggle) {
+      setTimeout(() => {
+        setSpinner(false);
+        setSuccessModal(true);
+      }, 300);
+    } else if (successModal) {
+      setTimeout(() => {
+        setSuccessModal(false);
+      }, 200);
+    }
+  }, [spinner, successModal, onToggle]);
 
   return (
     <View style={styles.parent}>
+      {spinner && (
+        <View style={styles.spinnerContainer}>
+          <View style={styles.spinner}>
+            <ActivityIndicator size="large" color="#fff" />
+          </View>
+        </View>
+      )}
+      {successModal && (
+        <View style={styles.spinnerContainer}>
+          <View style={styles.successModalContainer}>
+            <Text style={styles.successText}>Profile Updated!</Text>
+          </View>
+        </View>
+      )}
+      <Text style={styles.errMsg}>{updateErrMsg}</Text>
       <ScrollView>
         <View>
           <Text style={styles.editProfileText}>Edit Profile</Text>
-          <TouchableOpacity
-            onPress={() => showModal(true)}
-            style={styles.profilePictureContainer}>
-            <Image
-              source={{uri: `${API_URL}${user.picture}`}}
-              style={styles.profilePicture}
-            />
-            <View style={styles.penContainer}>
-              <Icon name="pen" style={styles.pen} />
+          <View>
+            <View
+              style={{
+                height: 25,
+                justifyContent: 'center',
+                alignItems: 'center',
+                marginBottom: 10,
+              }}>
+              <Text
+                style={{
+                  fontFamily: 'Poppins-Medium',
+                  color: 'red',
+                  fontSize: 18,
+                }}>
+                {pictureErr}
+              </Text>
             </View>
-          </TouchableOpacity>
+            <TouchableOpacity
+              onPress={() => showModal(true)}
+              style={styles.profilePictureContainer}>
+              <Image
+                source={
+                  user.picture !== null
+                    ? {
+                        uri: `${API_URL}${user.picture}`,
+                      }
+                    : defaultPicture
+                }
+                style={styles.profilePicture}
+              />
+              <View style={styles.penContainer}>
+                <Icon name="pen" style={styles.pen} />
+              </View>
+            </TouchableOpacity>
+          </View>
           <View style={styles.formData}>
             <SafeAreaView>
               <Text style={styles.label}>Name :</Text>
               <TextInput
-                value={name}
+                value={profile.name}
                 style={styles.input}
-                onChangeText={setName}
+                onChangeText={val => {
+                  setProfile({
+                    ...profile,
+                    name: val,
+                  });
+                }}
                 defaultValue={user.name}
               />
             </SafeAreaView>
             <SafeAreaView>
               <Text style={styles.label}>Email Address :</Text>
               <TextInput
-                value={username}
+                value={profile.username}
                 style={styles.input}
-                onChangeText={setUsername}
+                onChangeText={val => {
+                  setProfile({
+                    ...profile,
+                    username: val,
+                  });
+                }}
                 defaultValue={user.username}
               />
             </SafeAreaView>
             <SafeAreaView>
               <Text style={styles.label}>Phone Number :</Text>
               <TextInput
-                value={phone_number}
+                value={profile.phone_number}
                 style={styles.input}
-                onChangeText={setPhoneNumber}
+                onChangeText={val => {
+                  setProfile({
+                    ...profile,
+                    phone_number: val,
+                  });
+                }}
                 defaultValue={user.phone_number}
               />
             </SafeAreaView>
@@ -127,9 +236,14 @@ const EditProfile = props => {
             <SafeAreaView>
               <Text style={styles.label}>Delivery Address :</Text>
               <TextInput
-                value={user_address}
+                value={profile.user_address}
                 style={styles.input}
-                onChangeText={setUserAddress}
+                onChangeText={val => {
+                  setProfile({
+                    ...profile,
+                    user_address: val,
+                  });
+                }}
                 defaultValue={user.user_address}
               />
             </SafeAreaView>
@@ -175,6 +289,13 @@ const styles = StyleSheet.create({
   parent: {
     flex: 1,
   },
+  errMsg: {
+    textAlign: 'center',
+    marginTop: 20,
+    fontSize: 18,
+    fontFamily: 'Poppins-Medium',
+    color: 'red',
+  },
   editProfileText: {
     fontWeight: 'bold',
     fontSize: 30,
@@ -189,7 +310,7 @@ const styles = StyleSheet.create({
     height: 200,
     resizeMode: 'cover',
     borderRadius: 200 / 2,
-    backgroundColor: 'grey',
+    backgroundColor: '#fff',
   },
   penContainer: {
     backgroundColor: '#6A4029',
@@ -230,6 +351,32 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
     marginVertical: 20,
     fontSize: 20,
+    color: '#fff',
+  },
+  spinnerContainer: {
+    position: 'absolute',
+    width: '100%',
+    zIndex: 1,
+    backgroundColor: '#000000a0',
+    height: '100%',
+  },
+  spinner: {
+    marginTop: '100%',
+  },
+  successModalContainer: {
+    backgroundColor: '#6A4029',
+    alignItems: 'center',
+    marginTop: '100%',
+    marginHorizontal: 30,
+    justifyContent: 'center',
+    flexDirection: 'row',
+    borderRadius: 25,
+  },
+  successText: {
+    fontFamily: 'Poppins-Bold',
+    marginHorizontal: 5,
+    fontSize: 18,
+    marginVertical: 20,
     color: '#fff',
   },
   modalParent: {
@@ -287,9 +434,11 @@ const mapStateToProps = state => ({
 
 const mapDispatchToProps = {
   updateProfile,
+  uploadPicture,
   authSignOut,
   authSignIn,
   getUserSigned,
+  errorDefault,
 };
 
 export default connect(mapStateToProps, mapDispatchToProps)(EditProfile);

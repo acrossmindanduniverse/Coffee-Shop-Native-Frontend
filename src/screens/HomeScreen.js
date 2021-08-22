@@ -13,7 +13,9 @@ import {
 import Icon from 'react-native-vector-icons/AntDesign';
 import Entypo from 'react-native-vector-icons/Entypo';
 import Ionicons from 'react-native-vector-icons/Ionicons';
+import {homeToggle} from '../redux/actions/user';
 import {connect} from 'react-redux';
+import {registerFcmToken} from '../redux/actions/auth';
 import {
   getItemsCategory,
   getItemsByCategory,
@@ -22,9 +24,8 @@ import {
 } from '../redux/actions/items';
 
 const HomeScreen = props => {
-  const {data, dataByCategory, searchItemsData} = props.items;
+  const {data, dataByCategory} = props.items;
   const [screenTab, setScreenTab] = useState();
-  const [search, setSearch] = useState('');
   const [categoryName, setCategoryName] = useState([]);
 
   const mapAllCategoryName = category => {
@@ -42,12 +43,15 @@ const HomeScreen = props => {
     props.getItemsByCategory(tabComp);
   };
 
-  const onSearch = searchData => {
-    props.searchItems(searchData);
-    if (searchData) {
-      props.navigation.navigate('searchItems', searchData);
+  useEffect(() => {
+    if (props.auth.info !== null) {
+      props.registerFcmToken(props.auth.refreshToken?.token, {
+        token: props.auth.fcmToken?.token,
+      });
     }
-  };
+  }, []);
+
+  console.log(props.auth, 'auth home screen');
 
   useEffect(() => {
     mapAllCategoryName(data);
@@ -64,6 +68,10 @@ const HomeScreen = props => {
     props.getItemsCategory();
   }, []);
 
+  useEffect(() => {
+    props.homeToggle();
+  }, []);
+
   return (
     <View style={styles.parent}>
       <ScrollView
@@ -72,19 +80,13 @@ const HomeScreen = props => {
         <View style={styles.slogan}>
           <Text style={styles.sloganText}>A good coffee is a good day</Text>
         </View>
-        <View style={styles.inputContainer} initialValues={{search: ''}}>
-          <SafeAreaView style={styles.input}>
-            <View style={styles.iconContainer}>
-              <Icon style={styles.icon} name="search1" />
-            </View>
-            <TextInput
-              onTouchStart={() => props.navigation.navigate('searchItems')}
-              style={styles.searchInput}
-              placeholder="Search"
-              onChangeText={values => setSearch(values)}
-              onSubmitEditing={() => onSearch(search)}
-            />
-          </SafeAreaView>
+        <View style={styles.inputContainer}>
+          <Icon style={styles.icon} name="search1" />
+          <TextInput
+            onTouchStart={() => props.navigation.navigate('searchItems')}
+            style={styles.input}
+            placeholder="Search"
+          />
         </View>
         <ScrollView
           showsHorizontalScrollIndicator={false}
@@ -189,10 +191,22 @@ const HomeScreen = props => {
       <View style={styles.footer}>
         <View style={styles.footerItems}>
           <Entypo name="home" style={styles.home} />
-          <TouchableOpacity
-            onPress={() => props.navigation.navigate('profile')}>
-            <Ionicons name="person-outline" style={styles.home} />
-          </TouchableOpacity>
+          <View
+            style={{
+              flexDirection: 'row',
+            }}>
+            <TouchableOpacity
+              onPress={() => props.navigation.navigate('profile')}>
+              <Ionicons name="person-outline" style={styles.home} />
+            </TouchableOpacity>
+            <TouchableOpacity
+              onPress={() => props.navigation.navigate('chatList')}>
+              <Ionicons
+                name="chatbubble-ellipses-outline"
+                style={styles.home}
+              />
+            </TouchableOpacity>
+          </View>
         </View>
       </View>
     </View>
@@ -202,6 +216,7 @@ const HomeScreen = props => {
 const styles = StyleSheet.create({
   parent: {
     flex: 1,
+    backgroundColor: '#fff',
   },
   seeMore: {
     flex: 1,
@@ -210,10 +225,13 @@ const styles = StyleSheet.create({
   },
   seeMoreText: {
     marginRight: 30,
+    marginTop: 15,
+    fontFamily: 'Poppins-Medium',
+    fontSize: 18,
     color: 'rgba(106, 64, 41, 1)',
   },
   productParent: {
-    backgroundColor: '#EFEEEE',
+    backgroundColor: '#fff',
   },
   slogan: {
     marginTop: 90,
@@ -226,23 +244,27 @@ const styles = StyleSheet.create({
     fontSize: 35,
   },
   inputContainer: {
+    flexDirection: 'row',
+    backgroundColor: '#EFEEEE',
     alignItems: 'center',
     marginTop: 50,
+    marginHorizontal: 70,
+    borderRadius: 40,
   },
   input: {
-    flexDirection: 'row',
-    backgroundColor: '#fff',
-    elevation: 2,
-    borderRadius: 40,
-    width: 350,
+    marginVertical: 18,
+    fontSize: 25,
+    marginTop: 10,
+    marginLeft: 10,
+    width: '80%',
   },
   iconContainer: {
     alignItems: 'center',
     justifyContent: 'center',
   },
   icon: {
-    marginLeft: 10,
-    fontSize: 20,
+    marginLeft: 30,
+    fontSize: 25,
   },
   searchInput: {
     fontFamily: 'Poppins-Bold',
@@ -305,7 +327,6 @@ const styles = StyleSheet.create({
   },
   footer: {
     backgroundColor: 'transparent',
-    marginHorizontal: 20,
     marginVertical: 30,
   },
   footerItems: {
@@ -314,6 +335,9 @@ const styles = StyleSheet.create({
   },
   home: {
     color: '#6A4029',
+    marginHorizontal: 35,
+    position: 'relative',
+    justifyContent: 'center',
     fontSize: 35,
   },
 });
@@ -321,12 +345,15 @@ const styles = StyleSheet.create({
 const mapStateToProps = state => ({
   items: state.items,
   auth: state.auth,
+  user: state.user,
 });
 const mapDispatchToProps = {
+  registerFcmToken,
   getItemsCategory,
   getItemsByCategory,
   searchItems,
   getItemDefault,
+  homeToggle,
 };
 
 export default connect(mapStateToProps, mapDispatchToProps)(HomeScreen);

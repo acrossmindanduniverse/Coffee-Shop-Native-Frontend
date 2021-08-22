@@ -65,7 +65,9 @@ const HomeItemsGrid = props => {
               style={styles.itemInfo}>
               <Image style={styles.picture} source={{uri: `${item.picture}`}} />
               <Text style={styles.itemName}>{item.name}</Text>
-              <Text style={styles.itemPrice}>IDR {item.price}</Text>
+              <Text style={styles.itemPrice}>
+                IDR {Number(item.price).toLocaleString('ind')}
+              </Text>
             </TouchableOpacity>
           </View>
         )}

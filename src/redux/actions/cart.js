@@ -11,6 +11,13 @@ export const addItems = (amount, item, total) => ({
   payload: {amount, item, total},
 });
 
+export const deleteFromCart = item => dispatch => {
+  dispatch({
+    type: 'DELETE_FROM_CART',
+    payload: item,
+  });
+};
+
 export const finalTransaction = (token, transaction) => async dispatch => {
   try {
     const {data} = await http(token).post(`${API_URL}/private/transaction`, {

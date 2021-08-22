@@ -1,21 +1,19 @@
 import React, {useEffect} from 'react';
-import {View, Text, StyleSheet, Image, TouchableOpacity} from 'react-native';
+import {View, Text, StyleSheet, Image} from 'react-native';
 import defaultPicture from '../assets/defaultPicture.png';
 import {getUserSigned} from '../src/redux/actions/user';
 import {connect} from 'react-redux';
 import {API_URL} from '@env';
 
 const UserHome = props => {
-  const {refreshToken} = props.auth.info;
   const user = props.user.user[0];
 
   useEffect(() => {
-    props.getUserSigned(refreshToken);
-  }, [refreshToken]);
-
-  console.log(props.user.user[0], 'user home');
-
-  console.log(props.user, 'user home 123');
+    if (props.auth.info !== null) {
+      props.getUserSigned(props.auth.refreshToken?.token);
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [props.auth.refreshToken]);
 
   return (
     user !== undefined && (

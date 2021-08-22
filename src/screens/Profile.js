@@ -9,19 +9,19 @@ import {
 } from 'react-native';
 import {getUserSigned} from '../redux/actions/user';
 import Chevron from 'react-native-vector-icons/Entypo';
-import defaultImage from '../../assets/plate-and-cup.png';
+import defaultPicture from '../../assets/defaultPicture.png';
 import {connect} from 'react-redux';
 import {API_URL} from '@env';
 
 const Profile = props => {
-  const {userData, refreshToken} = props.auth.info;
   const user = props.user.user[0];
 
   useEffect(() => {
-    props.getUserSigned(refreshToken);
-  }, [userData]);
+    props.getUserSigned(props.auth.refreshToken.token);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [props.auth.refreshToken]);
 
-  console.log(props);
+  console.log(props, 'profile props');
 
   return (
     user !== undefined && (
@@ -40,9 +40,11 @@ const Profile = props => {
               <Image
                 style={styles.image}
                 source={
-                  {uri: user.picture}
-                    ? {uri: `${API_URL}${user.picture}`}
-                    : defaultImage
+                  user.picture !== null
+                    ? {
+                        uri: `${API_URL}${user.picture}`,
+                      }
+                    : defaultPicture
                 }
               />
             </View>
@@ -67,10 +69,12 @@ const Profile = props => {
             </View>
           </View>
           <View style={styles.profileMenuContainer}>
-            <View style={styles.profileMenu}>
+            <TouchableOpacity
+              onPress={() => props.navigation.navigate('confirmPassword')}
+              style={styles.profileMenu}>
               <Text style={styles.orderText}>Change Password</Text>
               <Chevron style={styles.chevronRight} name="chevron-right" />
-            </View>
+            </TouchableOpacity>
           </View>
           <View style={styles.profileMenuContainer}>
             <View style={styles.profileMenu}>
@@ -129,8 +133,8 @@ const styles = StyleSheet.create({
     width: 90,
     height: 90,
     resizeMode: 'cover',
-    backgroundColor: '#000',
     borderRadius: 90 / 2,
+    backgroundColor: 'white',
   },
   primaryText: {
     fontSize: 20,

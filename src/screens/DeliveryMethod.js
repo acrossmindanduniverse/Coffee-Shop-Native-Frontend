@@ -11,7 +11,7 @@ import {
 import {getUserSigned} from '../redux/actions/user';
 
 const DeliveryMethod = props => {
-  const {refreshToken} = props.auth.info;
+  const {token} = props.auth.refreshToken;
   const user = props.user.user[0];
   const {items} = props.cart;
   const newItems = items.map(e => e.amount);
@@ -21,8 +21,9 @@ const DeliveryMethod = props => {
   console.log(user.user_address, 'delivery method');
 
   useEffect(() => {
-    props.getUserSigned(refreshToken);
-  }, [refreshToken]);
+    props.getUserSigned(token);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [token]);
 
   console.log(addItems.reduce((acc, curr) => acc + curr));
   return (
@@ -84,9 +85,11 @@ const DeliveryMethod = props => {
         </View>
         <View style={styles.costContainer}>
           <Text style={styles.primaryText}>Cost</Text>
-          <Text style={styles.primaryText}>IDR {total}</Text>
+          <Text style={styles.primaryText}>
+            IDR {Number(total).toLocaleString('ind')}
+          </Text>
         </View>
-        {user.user_address !== '' ? (
+        {user.user_address !== null ? (
           <TouchableOpacity
             style={styles.confirmBtn}
             onPress={() => props.navigation.navigate('payment')}>

@@ -1,4 +1,4 @@
-import React, {useState, useEffect} from 'react';
+import React, {useEffect} from 'react';
 import {createStackNavigator} from '@react-navigation/stack';
 import {TouchableOpacity, StyleSheet, View, Text, FlatList} from 'react-native';
 import {NavigationContainer} from '@react-navigation/native';
@@ -7,7 +7,7 @@ import ProductDetail from './src/screens/ProductDetail';
 import {createDrawerNavigator} from '@react-navigation/drawer';
 import Icons from 'react-native-vector-icons/FontAwesome';
 import Cart from './src/screens/Cart';
-import {Header} from './components/GoBack';
+import {Header, ChatHeader} from './components/GoBack';
 import AllMenu from './src/screens/AllMenu';
 import PrivacyPolicy from './src/screens/PrivacyPolicy';
 import Security from './src/screens/Security';
@@ -29,6 +29,11 @@ import Ionicons from 'react-native-vector-icons/Ionicons';
 import AntDesign from 'react-native-vector-icons/AntDesign';
 import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
 import SplashScreen from './components/SplashScreen';
+import ConfirmPassword from './src/screens/ConfirmPassword';
+import EditPassword from './src/screens/EditPassword';
+import ChatList from './src/screens/ChatList';
+import ChatRoom from './src/screens/ChatRoom';
+import {API_URL} from '@env';
 
 const Drawer = createDrawerNavigator();
 const Stack = createStackNavigator();
@@ -132,17 +137,31 @@ const PromoStack = () => {
     </Stack.Navigator>
   );
 };
-const MainStack = props => {
-  console.log(props, 'test auth for main stack');
+
+const ChatStack = () => {
   return (
     <Stack.Navigator mode="modal">
       <Stack.Screen
-        component={SplashScreen}
-        name="splash"
+        component={ChatList}
+        name="chatList"
+        options={{
+          header: ChatHeader,
+        }}
+      />
+      <Stack.Screen
+        component={ChatRoom}
+        name="chatRoom"
         options={{
           headerShown: false,
         }}
       />
+    </Stack.Navigator>
+  );
+};
+
+const MainStack = () => {
+  return (
+    <Stack.Navigator mode="modal">
       <Stack.Screen
         component={HomeScreen}
         name="home"
@@ -176,8 +195,39 @@ const MainStack = props => {
         }}
       />
       <Stack.Screen
+        component={Profile}
+        name="profile"
+        options={{
+          header: Header,
+          headerTransparent: true,
+        }}
+      />
+      <Stack.Screen
+        component={ChatStack}
+        name="chatList"
+        options={{
+          headerShown: false,
+        }}
+      />
+      <Stack.Screen
         component={EditProfile}
         name="editProfile"
+        options={{
+          header: Header,
+          headerTransparent: true,
+        }}
+      />
+      <Stack.Screen
+        component={ConfirmPassword}
+        name="confirmPassword"
+        options={{
+          header: Header,
+          headerTransparent: true,
+        }}
+      />
+      <Stack.Screen
+        component={EditPassword}
+        name="editPassword"
         options={{
           header: Header,
           headerTransparent: true,
@@ -263,6 +313,8 @@ const DrawerContent = props => {
   const renderMenu = menuItem.map(
     item => props.descriptors[item].options.title,
   );
+  const newItem = renderMenu[0] === undefined && delete renderMenu[0];
+
   return (
     props.state.routeNames[0] !== 'auth' && (
       <View style={drawerContent.parent}>
@@ -314,78 +366,80 @@ const DrawerContent = props => {
 };
 
 const App = props => {
-  const [openDrawer, setOpenDrawer] = useState(false);
+
   const {info} = props.auth;
-
-  const handleOpenDrawer = () => {
-    setOpenDrawer(true);
-  };
-
-  console.log(info, 'debug info');
-
-  console.log(openDrawer, 'test open');
+  const {home} = props.user;
 
   return (
     <NavigationContainer>
-      <Drawer.Navigator
-        drawerStyle={{backgroundColor: 'transparent', width: 380}}
-        drawerContent={DrawerContent}>
-        {info !== null ? (
-          <>
-            <Drawer.Screen
-              options={{title: 'Home'}}
-              name="root"
-              component={MainStack}
-            />
-            <Drawer.Screen
+      {info !== null ? (
+        <Drawer.Navigator
+          drawerStyle={{backgroundColor: 'transparent', width: 380}}
+          drawerContent={DrawerContent}>
+          {!home && (
+            <Stack.Screen
+              component={SplashScreen}
+              name="splash"
               options={{
-                title: 'Profile',
+                headerShown: false,
               }}
-              name="profile"
-              component={ProfileStack}
             />
-            <Drawer.Screen
-              options={{
-                title: 'Orders',
-              }}
-              name="cart"
-              component={CartStack}
-            />
-            <Drawer.Screen
-              options={{title: 'Promo'}}
-              name="promo"
-              component={PromoStack}
-            />
-            <Drawer.Screen
-              options={{
-                title: 'All Menu',
-              }}
-              name="allMenu"
-              component={AllMenuStack}
-            />
-            <Drawer.Screen
-              options={{
-                title: 'Privacy Policy',
-              }}
-              name="privacyAndPolicy"
-              component={PrivacyPolicyStack}
-            />
-            <Drawer.Screen
-              options={{
-                title: 'Security',
-              }}
-              name="security"
-              component={SecurityStack}
-            />
-          </>
-        ) : (
+          )}
           <Drawer.Screen
-            options={{title: 'Auth'}}
+            options={{title: 'Home'}}
+            name="root"
+            component={MainStack}
+          />
+          <Drawer.Screen
+            options={{
+              title: 'Profile',
+            }}
+            name="profile"
+            component={ProfileStack}
+          />
+          <Drawer.Screen
+            options={{
+              title: 'Orders',
+            }}
+            name="cart"
+            component={CartStack}
+          />
+          <Drawer.Screen
+            options={{title: 'Promo'}}
+            name="promo"
+            component={PromoStack}
+          />
+          <Drawer.Screen
+            options={{
+              title: 'All Menu',
+            }}
+            name="allMenu"
+            component={AllMenuStack}
+          />
+          <Drawer.Screen
+            options={{
+              title: 'Privacy Policy',
+            }}
+            name="privacyAndPolicy"
+            component={PrivacyPolicyStack}
+          />
+          <Drawer.Screen
+            options={{
+              title: 'Security',
+            }}
+            name="security"
+            component={SecurityStack}
+          />
+        </Drawer.Navigator>
+      ) : (
+        <Stack.Navigator>
+          <Stack.Screen
+            options={({title: 'Auth'}, {headerShown: false})}
             name="auth"
             component={AuthStack}
           />
-        )}
-      </Drawer.Navigator>
+        </Stack.Navigator>
+      )}
     </NavigationContainer>
   );
 };
@@ -460,6 +514,7 @@ const drawerContent = StyleSheet.create({
 
 const mapStateToProps = state => ({
   auth: state.auth,
+  user: state.user,
 });
 
 export default connect(mapStateToProps)(App);

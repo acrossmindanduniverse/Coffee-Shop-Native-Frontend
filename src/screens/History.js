@@ -15,7 +15,7 @@ import {deleteTransactionHistory} from '../redux/actions/cart';
 import {connect} from 'react-redux';
 import {getAllTransactions} from '../redux/actions/items';
 const History = props => {
-  const {refreshToken, userData} = props.auth.info;
+  const {refreshToken, info} = props.auth;
   const [modal, setModal] = useState(false);
   const [saveItemToDelete, setSaveItemToDelete] = useState();
   const {allTransactions} = props.items;
@@ -24,17 +24,17 @@ const History = props => {
     setModal(visible);
   };
 
-  console.log(saveItemToDelete, 'items');
-
   const handleDelete = () => {
-    props.deleteTransactionHistory(refreshToken, saveItemToDelete).then(() => {
-      setModal(false);
-      props.getAllTransactions(refreshToken, userData.id);
-    });
+    props
+      .deleteTransactionHistory(refreshToken.token, saveItemToDelete)
+      .then(() => {
+        setModal(false);
+        props.getAllTransactions(refreshToken.token, info.id);
+      });
   };
 
   useEffect(() => {
-    props.getAllTransactions(refreshToken, userData.id);
+    props.getAllTransactions(refreshToken.token, info.id);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
@@ -83,7 +83,7 @@ const History = props => {
                 <SwipeListView
                   style={styles.historyWrapper}
                   data={allTransactions}
-                  renderItem={(data, rowMap) => {
+                  renderItem={(data, _rowMap) => {
                     return (
                       <View
                         onTouchMove={() => setSaveItemToDelete(data.item.id)}
@@ -94,10 +94,10 @@ const History = props => {
                         <View>
                           <Text style={styles.itemName}>{data.item.code}</Text>
                           <Text style={styles.itemInfo}>
-                            IDR {data.item.total}
+                            IDR {Number(data.item.total).toLocaleString('ind')}
                           </Text>
                           <Text style={styles.deliveryInfo}>
-                            {data.item.payment_method}
+                            {String(data.item.payment_method).toUpperCase()}
                           </Text>
                         </View>
                       </View>

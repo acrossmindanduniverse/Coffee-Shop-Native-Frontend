@@ -13,24 +13,27 @@ import EvillCons from 'react-native-vector-icons/EvilIcons';
 import FontAwesome from 'react-native-vector-icons/FontAwesome';
 import {addItems} from '../redux/actions/cart';
 import {connect} from 'react-redux';
-// import NoOrderBg from '../assets/Group-66.png';
 import NoOrderBg from '../../assets/Group-66.png';
-// import NoOrder from '../../components/NoOrder';
-import {deleteFromCart} from './../redux/actions/items';
+import {deleteFromCart} from './../redux/actions/cart';
+import {API_URL} from '@env';
 
 const Cart = props => {
   const {items} = props.cart;
-  const [getCartItem, setGetCartItem] = useState();
+  const [item, setItem] = useState([]);
+  const [close, setClose] = useState(false);
 
-  const deleteItem = () => {
-    props.deleteFromCart(getCartItem);
+  const deleteItem = data => {
+    props.deleteFromCart({item: data});
+    setClose(true);
   };
 
-  useEffect(data => {
-    setGetCartItem(data);
-  }, []);
+  useEffect(() => {
+    if (close) {
+      setClose(false);
+    }
+  }, [close]);
 
-  console.log(getCartItem, 'test items 123123');
+  console.log(close, 'test items 123123');
 
   return items.length > 0 ? (
     <View style={styles.parent}>
@@ -42,25 +45,30 @@ const Cart = props => {
         </View>
         <ScrollView style={styles.cartItemContainer}>
           <SwipeListView
+            closeOnRowPress={close}
             data={items}
             renderItem={(itemData, idx) => {
-              {
-                console.log(itemData[idx], 'test');
-              }
               return (
                 <View
-                  onTouchMove={() => setGetCartItem(itemData.item)}
+                  onTouchMove={() => setItem(itemData.item)}
                   key={idx}
                   style={styles.cart}>
                   <View style={styles.itemImageContainer}>
-                    <Image style={styles.itemImage} />
+                    {console.log(itemData.item)}
+                    <Image
+                      style={styles.itemImage}
+                      source={{uri: `${API_URL}${itemData.item.picture}`}}
+                    />
                   </View>
                   <View>
                     <Text style={styles.itemName}>
                       {itemData.item.amount.name}
                     </Text>
                     <Text style={styles.itemInfo}>
-                      IDR {itemData.item.amount.final_price}
+                      IDR{' '}
+                      {Number(itemData.item.amount.final_price).toLocaleString(
+                        'ind',
+                      )}
                     </Text>
                   </View>
                 </View>
@@ -72,7 +80,7 @@ const Cart = props => {
                   <FontAwesome style={styles.heartIcon} name="heart-o" />
                 </View>
                 <TouchableOpacity
-                  onPress={deleteItem}
+                  onPress={() => deleteItem(item)}
                   style={styles.trashContainer}>
                   <EvillCons style={styles.trashIcon} name="trash" />
                 </TouchableOpacity>
@@ -164,10 +172,11 @@ const styles = StyleSheet.create({
   },
   itemName: {
     fontSize: 25,
-    fontWeight: 'bold',
+    fontFamily: 'Poppins-Medium',
   },
   itemInfo: {
     fontSize: 15,
+    fontFamily: 'Poppins-SemiBold',
     color: 'rgba(106, 64, 41, 1)',
   },
   deliveryInfo: {

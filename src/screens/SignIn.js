@@ -1,5 +1,5 @@
 /* eslint-disable react-hooks/exhaustive-deps */
-import React, {useEffect, useState} from 'react';
+import React, {useEffect} from 'react';
 import {
   View,
   Text,
@@ -7,7 +7,6 @@ import {
   ImageBackground,
   StyleSheet,
   TouchableOpacity,
-  ActivityIndicator,
 } from 'react-native';
 import signInImg from '../../assets/sign-in.png';
 import Icon from 'react-native-vector-icons/FontAwesome';
@@ -16,15 +15,17 @@ import {connect} from 'react-redux';
 import {authSignIn, errorDefault} from '../redux/actions/auth';
 
 const SignIn = props => {
-  const {info, errMsg} = props.auth;
-  const [spinner, setSpinner] = useState(false);
+  const {errMsg, onAuth} = props.auth;
+
+  const handleSignIn = data => {
+    props.authSignIn(data);
+  };
+
   useEffect(() => {
-    if (errMsg !== '') {
+    if (onAuth) {
       props.errorDefault();
     }
-  }, [errMsg]);
-
-  console.log(props.auth);
+  }, [onAuth]);
 
   return (
     <View style={styles.parent}>
@@ -32,15 +33,7 @@ const SignIn = props => {
         style={styles.image}
         source={signInImg}
         resizeMode="cover">
-        {spinner && (
-          <View style={styles.customAlertContainer}>
-            <View marginTop={25}>
-              <ActivityIndicator size="large" color="#fff" />
-            </View>
-          </View>
-        )}
         <View style={styles.signInContainer}>
-          <Text style={styles.errorMessage}>{props.auth.errMsg}</Text>
           <Text style={styles.signIn}>Sign In</Text>
           <Formik
             style={styles.input}
@@ -48,9 +41,14 @@ const SignIn = props => {
               username: '',
               password: '',
             }}
-            onSubmit={values => props.authSignIn(values)}>
+            onSubmit={values => handleSignIn(values)}>
             {({handleChange, handleBlur, handleSubmit, values}) => (
               <View style={styles.formContent}>
+                {errMsg !== '' && (
+                  <View style={styles.errorMessageContainer}>
+                    <Text style={styles.errorMessage}>{errMsg}</Text>
+                  </View>
+                )}
                 <View>
                   <TextInput
                     style={styles.signInForm}
@@ -119,9 +117,16 @@ const styles = StyleSheet.create({
   image: {
     height: '100%',
   },
+  errorMessageContainer: {
+    backgroundColor: '#fff',
+    borderRadius: 25,
+    marginHorizontal: 50,
+  },
   errorMessage: {
     color: 'red',
+    fontFamily: 'Poppins-SemiBold',
     textAlign: 'center',
+    marginVertical: 18,
     fontSize: 20,
   },
   signInContainer: {

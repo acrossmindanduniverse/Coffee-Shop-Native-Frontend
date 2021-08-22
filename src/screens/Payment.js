@@ -16,8 +16,8 @@ import {finalTransaction, defaultItems} from '../redux/actions/cart';
 
 const Payment = props => {
   const [modal, setModal] = useState(false);
-  const token = props.auth.info.refreshToken;
-  const shipping = 1000;
+  const {token} = props.auth.refreshToken;
+  const shipping = 6000;
   const {cartItem, items} = props.cart;
   const cost = items.map(e => e.amount);
   const setTotal = items.map(e => e.amount.final_price * e.item);
@@ -172,7 +172,10 @@ const Payment = props => {
                       </View>
                       <View style={styles.finalPriceContainer}>
                         <Text style={styles.finalPrice}>
-                          IDR {item.amount.final_price}
+                          IDR{' '}
+                          {Number(item.amount.final_price).toLocaleString(
+                            'ind',
+                          )}
                         </Text>
                       </View>
                     </View>
@@ -185,21 +188,28 @@ const Payment = props => {
           <View style={styles.totalText}>
             <View style={styles.totalContent}>
               <Text style={styles.infoText}>Item Total</Text>
-              <Text style={styles.priceText}>IDR {costTotal}</Text>
+              <Text style={styles.priceText}>
+                IDR {Number(costTotal).toLocaleString('ind')}
+              </Text>
             </View>
             <View style={styles.totalContent}>
               <Text style={styles.infoText}>Tax and Fees</Text>
-              <Text style={styles.priceText}>IDR {taxAndFees}</Text>
+              <Text style={styles.priceText}>
+                IDR {Number(taxAndFees).toLocaleString('ind')}
+              </Text>
             </View>
             <View style={styles.totalContent}>
               <Text style={styles.infoText}>Delivery Charge</Text>
-              <Text style={styles.priceText}>IDR {shipping}</Text>
+              <Text style={styles.priceText}>
+                IDR {Number(shipping).toLocaleString('ind')}
+              </Text>
             </View>
           </View>
           <View style={styles.finalTotalContainer}>
             <Text style={styles.finalTotal}>TOTAL:</Text>
             <Text style={styles.finalTotal}>
-              IDR {costTotal + shipping + taxAndFees}
+              IDR{' '}
+              {Number(costTotal + shipping + taxAndFees).toLocaleString('ind')}
             </Text>
           </View>
           <TouchableOpacity
@@ -373,6 +383,7 @@ const styles = StyleSheet.create({
   },
   priceText: {
     fontSize: 18,
+    fontFamily: 'Poppins-Medium',
   },
   finalTotalContainer: {
     flexDirection: 'row',

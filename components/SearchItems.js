@@ -73,23 +73,6 @@ const SearchItems = props => {
   }, [tapped]);
 
   console.log(props.items, 'search items debugger');
-  // console.log(countPage, 'count', onReached, 'reached');
-
-  // useEffect(() => {
-  // if (pageInfo !== undefined || pageInfo.nextPage !== null) {
-  //   if (pageInfo.nextPage !== null) {
-  //     !onReached && setCountPage(countPage + 1);
-  //   }
-  // } else {
-  //   props.getItemDefault();
-  // }
-  // if (!onReached) {
-  //   setCountPage(countPage + 1);
-  // }
-  //   if (onReached) {
-  //     setCountPage(countPage + 1);
-  //   }
-  // }, []);
 
   const customDropDown = visible => {
     setModal(visible);

@@ -6,6 +6,7 @@ import items from './items';
 import auth from './auth';
 import cart from './cart';
 import user from './user';
+import chat from './chat';
 
 const persistAuth = {
   storage: AsyncStorage,
@@ -14,6 +15,7 @@ const persistAuth = {
 
 const reducer = combineReducers({
   auth: persistReducer(persistAuth, auth),
+  chat,
   user,
   items,
   cart,

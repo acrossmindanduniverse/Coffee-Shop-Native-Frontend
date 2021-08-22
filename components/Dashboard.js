@@ -5,12 +5,6 @@ import {toggleAuth} from './../redux/actions/auth';
 import Icon from 'react-native-vector-icons/FontAwesome';
 
 const Dashboard = props => {
-  // const isClicked = () => {
-  //   props.toggleAuth();
-  // };
-
-  // console.log(props.user);
-
   return (
     <TouchableOpacity style={dashboardStyles.barsContainer}>
       <Icon name="bars" style={dashboardStyles.bars} />

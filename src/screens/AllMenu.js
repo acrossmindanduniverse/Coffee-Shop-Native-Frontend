@@ -4,27 +4,13 @@ import {
   Text,
   StyleSheet,
   Image,
-  // TouchableOpacity,
+  TouchableOpacity,
   FlatList,
 } from 'react-native';
 import {connect} from 'react-redux';
 
 const AllMenu = props => {
   const {data} = props.items;
-  const [getData, setGetData] = useState([]);
-  const [shouldFetch, setShouldFetch] = useState(true);
-  const [screen, setScreen] = useState(1);
-
-  const dataPagination = useCallback(() => setShouldFetch(true), []);
-
-  useEffect(() => {
-    const fetch = page => {
-      setShouldFetch(false);
-      setGetData(oldData => [...oldData, ...data]);
-      setScreen(page + 1);
-    };
-    fetch();
-  }, [data]);
 
   return (
     <View style={styles.parent}>
@@ -35,11 +21,11 @@ const AllMenu = props => {
       <FlatList
         data={data}
         numColumns={2}
-        onEndReachedThreshold={0.5}
-        onEndReached={getData}
         renderItem={({item}) => (
           <View>
-            <View style={styles.itemContainer}>
+            <TouchableOpacity
+              onPress={() => props.navigation.navigate('detail', item.id)}
+              style={styles.itemContainer}>
               <View style={styles.itemInfo}>
                 <Image
                   style={styles.picture}
@@ -48,7 +34,7 @@ const AllMenu = props => {
                 <Text style={styles.itemName}>{item.name}</Text>
                 <Text style={styles.itemPrice}>IDR {item.price}</Text>
               </View>
-            </View>
+            </TouchableOpacity>
           </View>
         )}
       />

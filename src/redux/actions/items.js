@@ -152,10 +152,3 @@ export const getAllTransactions = (token, id) => async dispatch => {
     });
   }
 };
-
-export const deleteFromCart = index => dispatch => {
-  dispatch({
-    type: 'DELETE_FROM_CART',
-    payload: index,
-  });
-};
