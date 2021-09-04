@@ -1,8 +1,5 @@
 import {http} from '../../helpers/http';
-// import {API_URL} from '@env';
-
-// const API_URL = 'http://192.168.244.1:8000';
-const API_URL = 'http://localhost:8000';
+import {API_URL} from '@env';
 
 export const toggleAuth = () => dispatch => {
   dispatch({
