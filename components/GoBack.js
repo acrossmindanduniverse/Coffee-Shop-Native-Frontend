@@ -67,7 +67,7 @@ export const RoomChatHeader = props => {
     <View style={{backgroundColor: '#fff'}}>
       <View
         style={{
-          marginVertical: 80,
+          marginVertical: 30,
           justifyContent: 'center',
         }}>
         <View
@@ -97,7 +97,6 @@ const styles = StyleSheet.create({
   },
   headerIcon: {
     justifyContent: 'center',
-    marginRight: 510,
   },
   userCoupon: {
     alignItems: 'center',

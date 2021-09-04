@@ -1,5 +1,7 @@
 import {http} from '../../helpers/http';
-import {API_URL} from '@env';
+// import {API_URL} from '@env';
+// const API_URL = 'http://192.168.244.1:8000';
+const API_URL = 'http://localhost:8000';
 
 export const sendChat = (token, setData) => async dispatch => {
   const form = new FormData();
@@ -46,13 +48,10 @@ export const getChatRoom = (token, recipient) => async dispatch => {
   }
 };
 
-export const deleteChatRoom = (token, setData) => async dispatch => {
-  const form = new URLSearchParams();
-  form.append('recipient_id', setData.recipient_id);
+export const deleteChatRoom = (token, id) => async dispatch => {
   try {
     const {data} = await http(token).put(
-      `${API_URL}/chat/delete-chat-room`,
-      form,
+      `${API_URL}/chat/delete-chat-room/${id}`,
     );
     dispatch({
       type: 'DELETE_CHAT_ROOM',

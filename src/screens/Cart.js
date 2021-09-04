@@ -1,3 +1,4 @@
+/* eslint-disable react-native/no-inline-styles */
 import React, {useEffect, useState} from 'react';
 import {
   View,
@@ -37,13 +38,18 @@ const Cart = props => {
 
   return items.length > 0 ? (
     <View style={styles.parent}>
-      <Text style={styles.cartItem}>Cart</Text>
-      <View style={styles.cartItemContent}>
-        <View style={styles.swipeContainer}>
-          <MaterialIcons style={styles.icon} name="gesture-swipe-left" />
-          <Text style={styles.swipeText}>swipe item to delete</Text>
+      <View style={{flex: 1}}>
+        <View
+          style={{
+            padding: 25,
+          }}>
+          <Text style={styles.cartItem}>Cart</Text>
+          <View style={styles.swipeContainer}>
+            <MaterialIcons style={styles.icon} name="gesture-swipe-left" />
+            <Text style={styles.swipeText}>swipe item to delete</Text>
+          </View>
         </View>
-        <ScrollView style={styles.cartItemContainer}>
+        <ScrollView style={{padding: 15}}>
           <SwipeListView
             closeOnRowPress={close}
             data={items}
@@ -54,7 +60,6 @@ const Cart = props => {
                   key={idx}
                   style={styles.cart}>
                   <View style={styles.itemImageContainer}>
-                    {console.log(itemData.item)}
                     <Image
                       style={styles.itemImage}
                       source={{uri: `${API_URL}${itemData.item.picture}`}}
@@ -76,32 +81,38 @@ const Cart = props => {
             }}
             renderHiddenItem={data => (
               <View key={data} style={styles.iconContent}>
-                <View style={styles.heartContainer}>
-                  <FontAwesome style={styles.heartIcon} name="heart-o" />
+                <View
+                  style={{
+                    flexDirection: 'row',
+                  }}>
+                  <View style={styles.heartContainer}>
+                    <FontAwesome style={styles.heartIcon} name="heart-o" />
+                  </View>
+                  <TouchableOpacity
+                    onPress={() => deleteItem(item)}
+                    style={styles.trashContainer}>
+                    <EvillCons style={styles.trashIcon} name="trash" />
+                  </TouchableOpacity>
                 </View>
-                <TouchableOpacity
-                  onPress={() => deleteItem(item)}
-                  style={styles.trashContainer}>
-                  <EvillCons style={styles.trashIcon} name="trash" />
-                </TouchableOpacity>
               </View>
             )}
-            rightOpenValue={-120}
+            rightOpenValue={-160}
           />
         </ScrollView>
       </View>
-      {/* onPress={props.navigation.navigate('payment')} */}
-      <TouchableOpacity
-        style={styles.confirmContainer}
-        onPress={() => props.navigation.navigate('deliveryMethod')}>
-        <Text style={styles.confirmText}>Confirm and Checkout</Text>
-      </TouchableOpacity>
+      <View>
+        <TouchableOpacity
+          style={styles.confirmContainer}
+          onPress={() => props.navigation.navigate('deliveryMethod')}>
+          <Text style={styles.confirmText}>Confirm and Checkout</Text>
+        </TouchableOpacity>
+      </View>
     </View>
   ) : (
     <View style={styles.parent2}>
-      <ScrollView style={styles.firstContent}>
+      <View style={styles.firstContent}>
         <View style={styles.bgContainer}>
-          <Image source={NoOrderBg} style={styles.NoOrderBg} />
+          <Image source={NoOrderBg} />
           <View>
             <Text style={styles.noOrderText}>No orders yet</Text>
             <Text style={styles.hitBtn}>
@@ -109,7 +120,7 @@ const Cart = props => {
             </Text>
           </View>
         </View>
-      </ScrollView>
+      </View>
       <View style={styles.btnOrder}>
         <TouchableOpacity
           onPress={() => props.navigation.navigate('home')}
@@ -123,19 +134,21 @@ const Cart = props => {
 
 const styles = StyleSheet.create({
   parent: {
-    marginVertical: 90,
+    flex: 1,
+    paddingBottom: 20,
   },
   parent2: {
     flexDirection: 'column',
+    justifyContent: 'center',
+    alignContent: 'center',
+    alignItems: 'center',
     flex: 1,
   },
   cartItem: {
     fontWeight: 'bold',
+    marginVertical: 20,
     textAlign: 'center',
     fontSize: 34,
-  },
-  cartItemContent: {
-    margin: 50,
   },
   swipeContainer: {
     justifyContent: 'center',
@@ -148,17 +161,12 @@ const styles = StyleSheet.create({
   swipeText: {
     fontSize: 20,
   },
-  cartItemContainer: {
-    height: 490,
-    bottom: 90,
-    marginVertical: 150,
-  },
   cart: {
     flexDirection: 'row',
     marginVertical: 10,
     alignItems: 'center',
     backgroundColor: '#fff',
-    height: 110,
+    padding: 40,
     borderRadius: 17,
   },
   itemImageContainer: {
@@ -179,18 +187,14 @@ const styles = StyleSheet.create({
     fontFamily: 'Poppins-SemiBold',
     color: 'rgba(106, 64, 41, 1)',
   },
-  deliveryInfo: {
-    fontSize: 13,
-    width: 150,
-    color: 'rgba(106, 64, 41, 1)',
-  },
   iconContent: {
-    marginLeft: 380,
     flexDirection: 'row',
+    justifyContent: 'flex-end',
+    padding: 55,
+    alignContent: 'flex-end',
   },
   trashContainer: {
     width: 45,
-    marginTop: 50,
     height: 45,
     justifyContent: 'center',
     alignItems: 'center',
@@ -199,9 +203,8 @@ const styles = StyleSheet.create({
   },
   heartContainer: {
     width: 45,
-    marginTop: 50,
-    right: 15,
     height: 45,
+    marginHorizontal: 10,
     justifyContent: 'center',
     alignItems: 'center',
     borderRadius: 45 / 2,
@@ -215,32 +218,22 @@ const styles = StyleSheet.create({
     color: '#6A4029',
     fontSize: 25,
   },
-  amountContainer: {
-    top: 20,
-    width: 71,
-    height: 24,
-  },
-  amountCounter: {
-    borderRadius: 30,
-    backgroundColor: '#6A4029',
-    justifyContent: 'center',
-    flexDirection: 'row',
-  },
-  amountText: {
-    fontWeight: 'bold',
-    color: '#fff',
-    fontSize: 18,
+  btnOrder: {
+    padding: 30,
   },
   counterBtn: {
     marginHorizontal: 10,
   },
+  firstContent: {
+    flex: 1,
+    justifyContent: 'center',
+  },
   confirmContainer: {
     backgroundColor: '#6A4029',
     borderRadius: 20,
-    marginHorizontal: 50,
-    height: 70,
+    marginHorizontal: 30,
+    padding: 30,
     justifyContent: 'center',
-    bottom: 90,
   },
   confirmText: {
     fontWeight: 'bold',
@@ -248,17 +241,12 @@ const styles = StyleSheet.create({
     fontSize: 17,
     textAlign: 'center',
   },
-  firstContent: {
-    top: 230,
-    height: '100%',
-  },
   bgContainer: {
     justifyContent: 'center',
     alignItems: 'center',
   },
   noOrderText: {
     fontWeight: 'bold',
-    marginTop: 38,
     textAlign: 'center',
     fontSize: 40,
   },
@@ -267,12 +255,11 @@ const styles = StyleSheet.create({
     textAlign: 'center',
   },
   btn: {
-    height: 70,
+    padding: 20,
+    paddingHorizontal: 100,
     backgroundColor: '#6A4029',
     borderRadius: 20,
-    marginHorizontal: 50,
     justifyContent: 'center',
-    marginBottom: 41,
   },
   orderText: {
     fontSize: 20,

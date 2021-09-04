@@ -1,3 +1,4 @@
+/* eslint-disable react-native/no-inline-styles */
 import React, {useState, useEffect} from 'react';
 import {
   View,
@@ -75,7 +76,7 @@ const EditPassword = props => {
               position: 'absolute',
               height: '100%',
               width: '100%',
-              marginTop: 100,
+              padding: 100,
               zIndex: 1,
             }}>
             <ActivityIndicator size="large" color="rgba(106, 64, 41, 1)" />
@@ -89,8 +90,6 @@ const EditPassword = props => {
               style={{
                 backgroundColor: '#fff',
                 borderRadius: 10,
-                marginVertical: 120,
-                marginHorizontal: 40,
               }}>
               <View style={styles.modalContent}>
                 <Text style={styles.warn}>
@@ -128,7 +127,7 @@ const EditPassword = props => {
               <Text style={styles.errorMsg}>Password didn't match</Text>
             )}
           </View>
-          <View marginVertical={80}>
+          <View style={{padding: 50}}>
             <View style={styles.inputContent}>
               <TextInput
                 style={styles.input}
@@ -184,8 +183,9 @@ const EditPassword = props => {
 
 const styles = StyleSheet.create({
   inputParent: {
-    marginVertical: 120,
-    marginHorizontal: 60,
+    flex: 1,
+    justifyContent: 'center',
+    padding: 30,
   },
   loading: {
     position: 'absolute',
@@ -199,9 +199,11 @@ const styles = StyleSheet.create({
     width: '100%',
     backgroundColor: '#000000a0',
     height: '100%',
+    justifyContent: 'center',
+    padding: 20,
   },
   modalContent: {
-    margin: 40,
+    padding: 40,
   },
   warn: {
     fontSize: 25,
@@ -212,18 +214,19 @@ const styles = StyleSheet.create({
   changeBtn: {
     backgroundColor: 'rgba(106, 64, 41, 1)',
     marginBottom: 15,
+    padding: 18,
     borderRadius: 20,
     alignItems: 'center',
     justifyContent: 'center',
   },
   changeBtnText: {
     color: '#fff',
-    marginVertical: 20,
     fontFamily: 'Poppins-SemiBold',
     fontSize: 15,
   },
   cancelBtn: {
     marginBottom: 15,
+    padding: 18,
     borderRadius: 20,
     borderWidth: 1,
     borderColor: 'rgba(106, 64, 41, 1)',
@@ -232,7 +235,6 @@ const styles = StyleSheet.create({
   },
   cancelBtnText: {
     color: 'rgba(106, 64, 41, 1)',
-    marginVertical: 20,
     fontFamily: 'Poppins-SemiBold',
     fontSize: 15,
   },
@@ -267,8 +269,8 @@ const styles = StyleSheet.create({
   },
   inputContent: {
     borderRadius: 25,
-    marginHorizontal: 20,
     flexDirection: 'row',
+    padding: 15,
     justifyContent: 'space-between',
     borderWidth: 1,
     borderColor: 'grey',
@@ -276,13 +278,13 @@ const styles = StyleSheet.create({
   input: {
     fontSize: 18,
     fontWeight: 'bold',
-    marginHorizontal: 15,
   },
   inputBtn: {
     backgroundColor: 'rgba(106, 64, 41, 1)',
     marginTop: 35,
     borderRadius: 20,
     alignItems: 'center',
+    padding: 18,
     justifyContent: 'center',
   },
   inputBtn2: {
@@ -291,11 +293,11 @@ const styles = StyleSheet.create({
     marginTop: 35,
     borderRadius: 20,
     alignItems: 'center',
+    padding: 18,
     justifyContent: 'center',
   },
   inputBtnText: {
     color: '#fff',
-    marginVertical: 20,
     fontFamily: 'Poppins-SemiBold',
     fontSize: 18,
   },

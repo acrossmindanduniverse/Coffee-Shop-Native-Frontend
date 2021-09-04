@@ -341,9 +341,9 @@ const styles = StyleSheet.create({
   },
   saveBtn: {
     backgroundColor: '#6A4029',
+    padding: 7,
     borderRadius: 20,
     marginVertical: 20,
-    marginHorizontal: 50,
     justifyContent: 'center',
     alignItems: 'center',
   },

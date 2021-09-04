@@ -1,3 +1,4 @@
+/* eslint-disable react-native/no-inline-styles */
 import React, {useState, useEffect} from 'react';
 import {
   View,
@@ -29,10 +30,13 @@ const ConfirmPassword = props => {
   }, [onToggle]);
 
   return (
-    <View>
-      <View style={styles.inputParent}>
+    <View style={styles.inputParent}>
+      <View>
         <View style={styles.inputContainer}>
-          <View>
+          <View
+            style={{
+              height: 35,
+            }}>
             {updateErrMsg !== '' && (
               <Text style={styles.errorMsg}>{updateErrMsg}</Text>
             )}
@@ -63,43 +67,41 @@ const ConfirmPassword = props => {
 
 const styles = StyleSheet.create({
   inputParent: {
-    marginVertical: 120,
-    marginHorizontal: 60,
+    flex: 1,
+    alignItems: 'center',
+    justifyContent: 'center',
   },
   inputContainer: {
     backgroundColor: '#fff',
     elevation: 3,
+    padding: 70,
     borderRadius: 15,
   },
   errorMsg: {
     fontSize: 18,
-    marginTop: 20,
-    marginHorizontal: 20,
     fontFamily: 'Poppins-Medium',
     color: 'rgb(168, 50, 64)',
   },
   inputContent: {
     borderRadius: 25,
-    marginHorizontal: 20,
-    marginVertical: 80,
     borderWidth: 1,
     borderColor: 'grey',
   },
   input: {
     fontSize: 18,
+    padding: 20,
     fontWeight: 'bold',
-    marginHorizontal: 15,
   },
   inputBtn: {
     backgroundColor: 'rgba(106, 64, 41, 1)',
-    marginTop: 35,
     borderRadius: 20,
+    marginVertical: 20,
+    padding: 15,
     alignItems: 'center',
     justifyContent: 'center',
   },
   inputBtnText: {
     color: '#fff',
-    marginVertical: 20,
     fontFamily: 'Poppins-SemiBold',
     fontSize: 18,
   },

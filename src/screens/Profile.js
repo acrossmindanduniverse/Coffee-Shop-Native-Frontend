@@ -6,6 +6,7 @@ import {
   Image,
   StyleSheet,
   TouchableOpacity,
+  ScrollView,
 } from 'react-native';
 import {getUserSigned} from '../redux/actions/user';
 import Chevron from 'react-native-vector-icons/Entypo';
@@ -21,77 +22,80 @@ const Profile = props => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [props.auth.refreshToken]);
 
-  console.log(props, 'profile props');
-
   return (
     user !== undefined && (
       <View style={styles.parent}>
         <Text style={styles.myProfileText}>My Profile</Text>
-        <View style={styles.infoText}>
-          <Text style={styles.infoText1}>Your Information</Text>
-          <TouchableOpacity
-            onPress={() => props.navigation.navigate('editProfile')}>
-            <Text style={styles.infoText2}>edit</Text>
-          </TouchableOpacity>
-        </View>
-        <View style={styles.editProfileContainer}>
-          <View style={styles.editProfileContent}>
-            <View>
-              <Image
-                style={styles.image}
-                source={
-                  user.picture !== null
-                    ? {
-                        uri: `${API_URL}${user.picture}`,
-                      }
-                    : defaultPicture
-                }
-              />
-            </View>
-            <View style={styles.editProfile}>
-              <Text style={styles.primaryText}>{user.name}</Text>
-              <SafeAreaView>
-                <Text style={styles.primaryText}>{user.username}</Text>
-                <Text style={styles.primaryText}>{user.phone_number}</Text>
-                <Text style={styles.primaryText}>{user.user_address}</Text>
-              </SafeAreaView>
+        <ScrollView>
+          <View style={styles.infoText}>
+            <Text style={styles.infoText1}>Your Information</Text>
+            <TouchableOpacity
+              onPress={() => props.navigation.navigate('editProfile')}>
+              <Text style={styles.infoText2}>edit</Text>
+            </TouchableOpacity>
+          </View>
+          <View style={styles.editProfileContainer}>
+            <View style={styles.editProfileContent}>
+              <View>
+                <Image
+                  style={styles.image}
+                  source={
+                    user.picture !== null
+                      ? {
+                          uri: `${API_URL}${user.picture}`,
+                        }
+                      : defaultPicture
+                  }
+                />
+              </View>
+              <View style={styles.editProfile}>
+                <View style={styles.primaryTextContainer}>
+                  <Text style={styles.primaryText}>{user.name}</Text>
+                </View>
+                <View style={styles.primaryTextContainer}>
+                  <Text style={styles.primaryText}>{user.username}</Text>
+                </View>
+                <View style={styles.primaryTextContainer}>
+                  <Text style={styles.primaryText}>{user.phone_number}</Text>
+                </View>
+                <View style={styles.primaryTextContainer}>
+                  <Text style={styles.primaryText}>{user.user_address}</Text>
+                </View>
+              </View>
             </View>
           </View>
-        </View>
-        <View>
-          <View style={styles.profileMenuContainer}>
-            <View style={styles.profileMenu}>
-              <Text style={styles.orderText}>Order History</Text>
+          <View>
+            <View style={styles.profileMenuContainer}>
+              <View style={styles.profileMenu}>
+                <Text style={styles.orderText}>Order History</Text>
+                <TouchableOpacity
+                  onPress={() => props.navigation.navigate('history')}>
+                  <Chevron style={styles.chevronRight} name="chevron-right" />
+                </TouchableOpacity>
+              </View>
+            </View>
+            <View style={styles.profileMenuContainer}>
               <TouchableOpacity
-                onPress={() => props.navigation.navigate('history')}>
+                onPress={() => props.navigation.navigate('confirmPassword')}
+                style={styles.profileMenu}>
+                <Text style={styles.orderText}>Change Password</Text>
                 <Chevron style={styles.chevronRight} name="chevron-right" />
               </TouchableOpacity>
             </View>
-          </View>
-          <View style={styles.profileMenuContainer}>
-            <TouchableOpacity
-              onPress={() => props.navigation.navigate('confirmPassword')}
-              style={styles.profileMenu}>
-              <Text style={styles.orderText}>Change Password</Text>
-              <Chevron style={styles.chevronRight} name="chevron-right" />
-            </TouchableOpacity>
-          </View>
-          <View style={styles.profileMenuContainer}>
-            <View style={styles.profileMenu}>
-              <Text style={styles.orderText}>FAQ</Text>
-              <Chevron style={styles.chevronRight} name="chevron-right" />
+            <View style={styles.profileMenuContainer}>
+              <View style={styles.profileMenu}>
+                <Text style={styles.orderText}>FAQ</Text>
+                <Chevron style={styles.chevronRight} name="chevron-right" />
+              </View>
+            </View>
+            <View style={styles.profileMenuContainer}>
+              <View style={styles.profileMenu}>
+                <Text style={styles.orderText}>Help</Text>
+                <Chevron style={styles.chevronRight} name="chevron-right" />
+              </View>
             </View>
           </View>
-          <View style={styles.profileMenuContainer}>
-            <View style={styles.profileMenu}>
-              <Text style={styles.orderText}>Help</Text>
-              <Chevron style={styles.chevronRight} name="chevron-right" />
-            </View>
-          </View>
-          <TouchableOpacity style={styles.saveChangeBtn}>
-            <Text style={styles.saveChangeText}>Save Change</Text>
-          </TouchableOpacity>
-        </View>
+        </ScrollView>
       </View>
     )
   );
@@ -99,8 +103,8 @@ const Profile = props => {
 
 const styles = StyleSheet.create({
   parent: {
-    marginHorizontal: 57,
-    marginVertical: 80,
+    marginHorizontal: 30,
+    flex: 1,
   },
   myProfileText: {
     fontSize: 34,
@@ -141,10 +145,14 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
     color: 'rgba(106, 64, 41, 1)',
     marginVertical: 5,
+  },
+  primaryTextContainer: {
     borderBottomWidth: 1,
+    padding: 5,
   },
   editProfile: {
-    marginLeft: 20,
+    padding: 10,
+    width: '80%',
   },
   orderText: {
     fontWeight: 'bold',
@@ -162,21 +170,8 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
     marginHorizontal: 30,
   },
-  saveChangeBtn: {
-    backgroundColor: '#6A4029',
-    marginTop: 24,
-    justifyContent: 'center',
-    alignItems: 'center',
-    height: 70,
-    borderRadius: 20,
-  },
   chevronRight: {
     fontSize: 20,
-  },
-  saveChangeText: {
-    fontWeight: 'bold',
-    fontSize: 17,
-    color: '#fff',
   },
 });
 

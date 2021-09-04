@@ -1,6 +1,13 @@
 import React, {useEffect} from 'react';
 import {createStackNavigator} from '@react-navigation/stack';
-import {TouchableOpacity, StyleSheet, View, Text, FlatList} from 'react-native';
+import {
+  TouchableOpacity,
+  StyleSheet,
+  View,
+  Text,
+  FlatList,
+  ScrollView,
+} from 'react-native';
 import {NavigationContainer} from '@react-navigation/native';
 import HomeScreen from './src/screens/HomeScreen';
 import ProductDetail from './src/screens/ProductDetail';
@@ -313,12 +320,10 @@ const DrawerContent = props => {
   const renderMenu = menuItem.map(
     item => props.descriptors[item].options.title,
   );
-  const newItem = renderMenu[0] === undefined && delete renderMenu[0];
-
   return (
     props.state.routeNames[0] !== 'auth' && (
       <View style={drawerContent.parent}>
-        <View style={styles.content}>
+        <ScrollView style={styles.content}>
           <UserHome />
           <FlatList
             style={drawerContent.menu}
@@ -359,14 +364,13 @@ const DrawerContent = props => {
             )}
           />
           <SignOut />
-        </View>
+        </ScrollView>
       </View>
     )
   );
 };
 
 const App = props => {
-
   const {info} = props.auth;
   const {home} = props.user;
 
@@ -374,7 +378,7 @@ const App = props => {
     <NavigationContainer>
       {info !== null ? (
         <Drawer.Navigator
-          drawerStyle={{backgroundColor: 'transparent', width: 380}}
+          drawerStyle={{backgroundColor: 'transparent', width: 350}}
           drawerContent={DrawerContent}>
           {!home && (
             <Stack.Screen

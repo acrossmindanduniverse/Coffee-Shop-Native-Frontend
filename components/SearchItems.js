@@ -199,14 +199,14 @@ const styles = StyleSheet.create({
   searchContainer: {
     flexDirection: 'row',
     justifyContent: 'center',
-    marginVertical: 20,
+    padding: 70,
   },
   input: {
     flexDirection: 'row',
     backgroundColor: '#fff',
     elevation: 2,
+    width: 250,
     borderRadius: 40,
-    width: 350,
   },
   dropDown: {
     justifyContent: 'center',
@@ -282,13 +282,13 @@ const styles = StyleSheet.create({
     textAlign: 'center',
     fontSize: 17,
   },
-  // errorContainer: {
-  //   justifyContent: 'center',
-  //   alignItems: 'center',
-  // },
-  error: {
-    marginTop: 420,
+  errorContainer: {
+    justifyContent: 'center',
+    alignItems: 'center',
   },
+  // error: {
+  //   marginTop: 420,
+  // },
   errorText: {
     textAlign: 'center',
     fontWeight: 'bold',

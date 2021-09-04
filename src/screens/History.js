@@ -1,3 +1,4 @@
+/* eslint-disable react-native/no-inline-styles */
 import React, {useEffect, useState} from 'react';
 import {
   View,
@@ -71,7 +72,7 @@ const History = props => {
         </View>
       </Modal>
       {allTransactions.length > 0 ? (
-        <View>
+        <ScrollView>
           <Text style={styles.orderHistory}>Order History</Text>
           <View>
             <View style={styles.itemHistoryContent}>
@@ -79,43 +80,47 @@ const History = props => {
                 <MaterialIcons style={styles.icon} name="gesture-swipe-left" />
                 <Text style={styles.swipeText}>swipe item to delete</Text>
               </View>
-              <ScrollView style={styles.itemHistoryContainer}>
-                <SwipeListView
-                  style={styles.historyWrapper}
-                  data={allTransactions}
-                  renderItem={(data, _rowMap) => {
-                    return (
-                      <View
-                        onTouchMove={() => setSaveItemToDelete(data.item.id)}
-                        style={styles.history}>
-                        <View style={styles.itemImageContainer}>
-                          <Image style={styles.itemImage} />
-                        </View>
-                        <View>
-                          <Text style={styles.itemName}>{data.item.code}</Text>
-                          <Text style={styles.itemInfo}>
-                            IDR {Number(data.item.total).toLocaleString('ind')}
-                          </Text>
-                          <Text style={styles.deliveryInfo}>
-                            {String(data.item.payment_method).toUpperCase()}
-                          </Text>
-                        </View>
+              <SwipeListView
+                data={allTransactions}
+                renderItem={(data, _rowMap) => {
+                  return (
+                    <View
+                      onTouchMove={() => setSaveItemToDelete(data.item.id)}
+                      style={styles.history}>
+                      <View style={styles.itemImageContainer}>
+                        <Image style={styles.itemImage} />
                       </View>
-                    );
-                  }}
-                  renderHiddenItem={() => (
+                      <View style={{width: '50%'}}>
+                        <Text style={styles.itemName}>{data.item.code}</Text>
+                        <Text style={styles.itemInfo}>
+                          IDR {Number(data.item.total).toLocaleString('ind')}
+                        </Text>
+                        <Text style={styles.deliveryInfo}>
+                          {String(data.item.payment_method).toUpperCase()}
+                        </Text>
+                      </View>
+                    </View>
+                  );
+                }}
+                renderHiddenItem={() => (
+                  <View
+                    style={{
+                      justifyContent: 'flex-end',
+                      alignItems: 'flex-end',
+                      padding: 40,
+                    }}>
                     <TouchableOpacity
                       onPress={() => showModal(true)}
                       style={styles.trashCan}>
                       <EvillCons style={styles.trashIcon} name="trash" />
                     </TouchableOpacity>
-                  )}
-                  rightOpenValue={-120}
-                />
-              </ScrollView>
+                  </View>
+                )}
+                rightOpenValue={-120}
+              />
             </View>
           </View>
-        </View>
+        </ScrollView>
       ) : (
         <View style={styles.noTransactionsContainer}>
           <Text style={styles.noTransactions}>No transactions yet</Text>
@@ -131,13 +136,15 @@ const History = props => {
 };
 
 const styles = StyleSheet.create({
-  parent: {
-    marginVertical: 90,
-  },
+  // parent: {
+  //   flex: 1,
+  // },
   modalParent: {
     position: 'absolute',
     width: '100%',
     backgroundColor: '#000000a0',
+    padding: 65,
+    paddingVertical: 100,
     height: '100%',
   },
   modal: {
@@ -147,8 +154,6 @@ const styles = StyleSheet.create({
   modalContainer: {
     backgroundColor: '#fff',
     elevation: 3,
-    marginHorizontal: 60,
-    marginVertical: 200,
     borderRadius: 20,
   },
   customTextContainer: {
@@ -156,7 +161,7 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     borderBottomEndRadius: 30,
     borderBottomStartRadius: 30,
-    height: 80,
+    padding: 20,
   },
   customText: {
     textAlign: 'center',
@@ -166,11 +171,10 @@ const styles = StyleSheet.create({
   },
   btnContainer: {
     flexDirection: 'row',
+    paddingVertical: 70,
+    paddingHorizontal: 4,
     justifyContent: 'space-between',
     alignContent: 'center',
-    marginVertical: 70,
-    top: 20,
-    marginHorizontal: 90,
   },
   primaryBtn: {
     width: 100,
@@ -186,8 +190,8 @@ const styles = StyleSheet.create({
   },
   orderHistory: {
     fontFamily: 'Poppins-Bold',
+    textAlign: 'center',
     fontSize: 34,
-    marginLeft: 50,
   },
   itemHistoryContent: {
     margin: 50,
@@ -203,15 +207,15 @@ const styles = StyleSheet.create({
   swipeText: {
     fontSize: 20,
   },
-  itemHistoryContainer: {
-    marginVertical: 20,
-  },
+  // itemHistoryContainer: {
+  //   marginVertical: 20,
+  // },
   history: {
     flexDirection: 'row',
-    marginVertical: 10,
     alignItems: 'center',
+    paddingVertical: 10,
+    marginVertical: 10,
     backgroundColor: '#fff',
-    height: 110,
     borderRadius: 17,
   },
   itemImageContainer: {
@@ -260,8 +264,6 @@ const styles = StyleSheet.create({
   },
   trashCan: {
     width: 45,
-    marginLeft: 400,
-    marginTop: 50,
     height: 45,
     justifyContent: 'center',
     alignItems: 'center',

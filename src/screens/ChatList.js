@@ -1,3 +1,4 @@
+/* eslint-disable react-native/no-inline-styles */
 import React, {useEffect, useState} from 'react';
 import Icon from 'react-native-vector-icons/AntDesign';
 import {connect} from 'react-redux';
@@ -28,9 +29,7 @@ const ChatList = props => {
   const [modal, setModal] = useState(false);
   const [spinner, setSpinner] = useState(false);
   const [search, setSearch] = useState('');
-  const [deleteChat, setDeleteChat] = useState({
-    recipient_id: '',
-  });
+  const [deleteChat, setDeleteChat] = useState('');
   const timeFormat = {
     hour: 'numeric',
     minute: 'numeric',
@@ -43,12 +42,16 @@ const ChatList = props => {
   };
 
   const handleDeleteChat = () => {
-    props.deleteChatRoom(props.auth.refreshToken.token, deleteChat);
-    setDeleteChat({
-      ...deleteChat,
-      recipient_id: '',
-    });
-    setModal(false);
+    props
+      .deleteChatRoom(props.auth.refreshToken.token, deleteChat)
+      .then(res => {
+        setDeleteChat('');
+        setModal(false);
+        console.log(res);
+      })
+      .catch(err => {
+        console.log(err);
+      });
   };
 
   const handleSearch = () => {
@@ -75,6 +78,7 @@ const ChatList = props => {
     if (spinner) {
       setTimeout(() => {
         setSpinner(false);
+        props.getChat(props.auth.refreshToken.token);
         props.defaultState();
         // props.getChat(props.auth.refreshToken?.token);
       }, 500);
@@ -84,17 +88,15 @@ const ChatList = props => {
 
   useEffect(() => {
     socket.on(info.id, data => {
-      props.getChat(props.auth.refreshToken.token);
       PushNotification.localNotification({
         channelId: 'general',
         title: `New message from: ${data.senderData.name}`,
         message: `${data.message}`,
       });
+      props.getChat(props.auth.refreshToken.token);
     });
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
-
-  console.log(latest);
 
   useEffect(() => {
     props.getChat(props.auth.refreshToken.token);
@@ -112,7 +114,7 @@ const ChatList = props => {
               position: 'absolute',
               height: '100%',
               width: '100%',
-              marginTop: 100,
+              padding: 100,
               zIndex: 1,
             }}>
             <ActivityIndicator size="large" color="rgba(106, 64, 41, 1)" />
@@ -149,9 +151,9 @@ const ChatList = props => {
           </View>
         </View>
       </Modal>
-      <View style={{flex: 1}}>
+      <ScrollView>
         <View style={styles.firstContent}>
-          <View style={styles.firstInside}>
+          <View style={{paddingHorizontal: 50}}>
             <View style={styles.inputContainer}>
               <Icon style={styles.icon} name="search1" />
               <TextInput
@@ -162,32 +164,38 @@ const ChatList = props => {
                 placeholder="Search"
               />
             </View>
-            <View style={styles.chooseChat}>
-              <Text style={styles.primaryText}>
-                Choose anyone you want to talk with
-              </Text>
-            </View>
-            <FlatList
-              data={findUser}
-              horizontal
-              renderItem={userData => (
-                <TouchableOpacity
-                  onPress={() => handleGoToRoom(userData)}
-                  style={styles.userComp}>
-                  {console.log(userData.item.picture, 'picture')}
-                  {userData.item.picture === null ? (
-                    <Image source={defaultPicture} style={styles.picture1st} />
-                  ) : (
-                    <Image
-                      source={{uri: `${API_URL}${userData.item.picture}`}}
-                      style={styles.picture1st}
-                    />
-                  )}
-                  <Text style={styles.primaryText}>{userData.item.name}</Text>
-                </TouchableOpacity>
-              )}
-            />
           </View>
+          <View style={styles.chooseChat}>
+            <Text style={styles.primaryText}>
+              Choose anyone you want to talk with
+            </Text>
+          </View>
+          <FlatList
+            keyExtractor={item => String(item.id)}
+            data={findUser}
+            horizontal
+            renderItem={userData => (
+              <TouchableOpacity
+                onPress={() => {
+                  if (userData.item.id !== info.id) {
+                    handleGoToRoom(userData);
+                  } else {
+                    props.navigation.navigate('profile');
+                  }
+                }}
+                style={styles.userComp}>
+                {userData.item.picture === null ? (
+                  <Image source={defaultPicture} style={styles.picture1st} />
+                ) : (
+                  <Image
+                    source={{uri: `${API_URL}${userData.item.picture}`}}
+                    style={styles.picture1st}
+                  />
+                )}
+                <Text style={styles.primaryText}>{userData.item.name}</Text>
+              </TouchableOpacity>
+            )}
+          />
         </View>
         {latest.length < 1 ? (
           <View style={styles.noConvoContainer}>
@@ -196,19 +204,17 @@ const ChatList = props => {
         ) : (
           <View style={styles.secondContent}>
             <Text style={styles.messageHeader}>Message</Text>
-            <ScrollView showsVerticalScrollIndicator={false}>
+            <View showsVerticalScrollIndicator={false}>
               <FlatList
+                keyExtractor={item => String(item.id)}
                 data={latestReverse}
                 renderItem={userData => (
                   <TouchableOpacity
+                    onPress={() => handleGoToRoom(userData)}
                     onLongPress={() => {
                       showModal(true);
-                      setDeleteChat({
-                        ...deleteChat,
-                        recipient_id: userData.item.id,
-                      });
+                      setDeleteChat(userData.item.id);
                     }}
-                    onPress={() => handleGoToRoom(userData)}
                     style={styles.chatBox}>
                     {userData.item.picture === null ? (
                       <Image
@@ -225,7 +231,7 @@ const ChatList = props => {
                       <View style={styles.chatBoxContent1}>
                         <View
                           style={{
-                            width: '75%',
+                            width: '50%',
                           }}>
                           <Text style={styles.name}>{userData.item.name}</Text>
                         </View>
@@ -241,12 +247,11 @@ const ChatList = props => {
                     </View>
                   </TouchableOpacity>
                 )}
-                keyExtractor={idx => idx}
               />
-            </ScrollView>
+            </View>
           </View>
         )}
-      </View>
+      </ScrollView>
     </View>
   );
 };
@@ -268,6 +273,8 @@ const styles = StyleSheet.create({
     width: '100%',
     backgroundColor: '#000000a0',
     height: '100%',
+    padding: 65,
+    paddingVertical: 100,
   },
   modal: {
     position: 'absolute',
@@ -276,16 +283,14 @@ const styles = StyleSheet.create({
   modalContainer: {
     backgroundColor: '#fff',
     elevation: 3,
-    marginHorizontal: 60,
-    marginVertical: 200,
     borderRadius: 20,
   },
   customTextContainer: {
     backgroundColor: 'rgba(106, 64, 41, 1)',
     justifyContent: 'center',
     borderBottomEndRadius: 30,
+    padding: 10,
     borderBottomStartRadius: 30,
-    height: 80,
   },
   customText: {
     textAlign: 'center',
@@ -295,11 +300,8 @@ const styles = StyleSheet.create({
   },
   btnContainer: {
     flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignContent: 'center',
-    marginVertical: 70,
-    top: 20,
-    marginHorizontal: 90,
+    justifyContent: 'center',
+    padding: 60,
   },
   firstContent: {
     borderBottomWidth: 4,
@@ -315,14 +317,11 @@ const styles = StyleSheet.create({
     color: '#9A9A9D',
     fontSize: 20,
   },
-  secondContent: {
-    flex: 1,
-  },
+  // secondContent: {
+  //   flex: 1,
+  // },
   chatBoxContainer: {
     marginBottom: 30,
-  },
-  firstInside: {
-    marginHorizontal: 85,
   },
   messageHeader: {
     fontSize: 30,
@@ -339,9 +338,8 @@ const styles = StyleSheet.create({
   },
   chatBox: {
     justifyContent: 'center',
-    marginBottom: 20,
-    marginHorizontal: 140,
     flexDirection: 'row',
+    padding: 40,
   },
   chatBoxContent1: {
     flexDirection: 'row',
@@ -389,6 +387,7 @@ const styles = StyleSheet.create({
     width: 100,
     alignItems: 'center',
     height: 30,
+    marginHorizontal: 10,
     borderWidth: 1,
     borderRadius: 5,
   },

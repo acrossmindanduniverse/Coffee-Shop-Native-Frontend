@@ -1,3 +1,4 @@
+/* eslint-disable react-native/no-inline-styles */
 import React, {useEffect, useState, useRef} from 'react';
 import Ionicons from 'react-native-vector-icons/Ionicons';
 import AntDesign from 'react-native-vector-icons/AntDesign';
@@ -97,18 +98,11 @@ const ChatRoom = props => {
       file: '',
       recipient_id: newRoute[0],
     });
-    props
-      .sendChat(props.auth.refreshToken?.token, chat)
-      .then(() => {
-        props.getChatRoom(props.auth.refreshToken?.token, newRoute[0]);
-        props.getChat(props.auth.refreshToken?.token);
-      })
-      .catch(err => {
-        console.log(err);
-      });
+    props.sendChat(props.auth.refreshToken.token, chat).then(() => {
+      props.getChat(props.auth.refreshToken.token);
+    });
+    props.getChatRoom(props.auth.refreshToken.token, newRoute[0]);
   };
-
-  console.log(chat, 'chat data');
 
   const handleScrollView = () => {
     scrollViewRef.current.scrollToEnd({animated: true});
@@ -128,14 +122,14 @@ const ChatRoom = props => {
         ref={scrollViewRef}
         onContentSizeChange={handleScrollView}
         showsVerticalScrollIndicator={false}
-        style={{marginVertical: 50, marginBottom: 20}}>
+        style={{marginBottom: 20}}>
         <FlatList
+          keyExtractor={item => String(item.id)}
           data={room}
           renderItem={userData => {
             return userData.item.sender_id !== info.id.toString() ? (
               <View style={styles.anotherUser}>
-                {console.log(userData.item.picture, 'user picture')}
-                {userData.item.picture === undefined ? (
+                {userData.item.picture === null ? (
                   <Image source={defaultPicture} style={styles.userPicture} />
                 ) : (
                   <Image
@@ -250,7 +244,7 @@ const ChatRoom = props => {
                       .slice(10)}`}</Text>
                   </View>
                 </View>
-                {userData.item.picture === undefined ? (
+                {userData.item.picture === null ? (
                   <Image source={defaultPicture} style={styles.userPicture} />
                 ) : (
                   <Image
@@ -261,7 +255,6 @@ const ChatRoom = props => {
               </View>
             );
           }}
-          keyExtractor={idx => String(idx)}
         />
       </ScrollView>
       {chat.file !== '' && (
@@ -383,9 +376,9 @@ const styles = StyleSheet.create({
   },
   inputContainer: {
     flexDirection: 'row',
-    marginHorizontal: 70,
     justifyContent: 'space-between',
-    padding: 10,
+    padding: 15,
+    marginHorizontal: 20,
     marginBottom: 50,
     backgroundColor: '#EFEEEE',
     borderRadius: 30,
@@ -406,13 +399,10 @@ const styles = StyleSheet.create({
   },
   input: {
     fontSize: 25,
-    marginLeft: 20,
-    marginTop: 10,
-    width: '80%',
+    width: '90%',
     fontFamily: 'Poppins-Light',
   },
   icon: {
-    marginRight: 20,
     fontSize: 25,
     color: 'grey',
   },

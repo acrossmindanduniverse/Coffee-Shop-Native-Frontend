@@ -1,3 +1,4 @@
+/* eslint-disable react-native/no-inline-styles */
 /* eslint-disable react-hooks/exhaustive-deps */
 import React, {useEffect, useState} from 'react';
 import {
@@ -7,6 +8,7 @@ import {
   TouchableOpacity,
   FlatList,
   Image,
+  ScrollView,
 } from 'react-native';
 import Icon from 'react-native-vector-icons/FontAwesome';
 import {connect} from 'react-redux';
@@ -21,7 +23,7 @@ const ProductDetail = props => {
   const {itemsAndVariants, variantDetail} = props.items;
   const [added, setAdded] = useState(false);
   const variant = itemsAndVariants.map(row => row.variant_code);
-  const [_, setScreenTab] = useState();
+  const [screenTab, setScreenTab] = useState();
   const [amount, setAmount] = useState(1);
 
   const handleVariantTouch = (id, tab) => {
@@ -39,7 +41,7 @@ const ProductDetail = props => {
       setAmount(1);
       setTimeout(() => {
         setAdded(false);
-      }, 200);
+      }, 1000);
     }
   }, [added]);
 
@@ -74,68 +76,92 @@ const ProductDetail = props => {
   return (
     variantDetail[0] !== undefined && (
       <View style={styles.parent}>
-        <View>
-          <View style={styles.itemContainer}>
-            <View style={styles.imageContainer}>
-              <View style={styles.imageParent}>
-                {console.log(variantDetail[0].picture, 'picture')}
+        <ScrollView style={{flex: 1}}>
+          <View>
+            <View style={{flexDirection: 'row'}}>
+              <View style={styles.info1}>
                 <Image
                   style={styles.image}
                   source={{uri: `${itemsAndVariants[1].picture}`}}
                 />
-                <Text style={styles.itemText}>{variantDetail[0].name}</Text>
-                <Text style={styles.deliveryInfo}>
-                  {variantDetail[0].delivery_on}
-                </Text>
+                <View style={{flexDirection: 'column', padding: 20}}>
+                  <View
+                    style={{justifyContent: 'center', alignItems: 'center'}}>
+                    <Text style={styles.itemText}>{variantDetail[0].name}</Text>
+                    <Text style={styles.deliveryInfo}>
+                      {variantDetail[0].delivery_on}
+                    </Text>
+                  </View>
+                </View>
+              </View>
+              <View style={{padding: 30}}>
+                <FlatList
+                  keyExtractor={index => String(index)}
+                  data={variant}
+                  renderItem={({item}) => (
+                    <View style={styles.variantContainer}>
+                      <TouchableOpacity
+                        onPress={() => handleVariantTouch(params, item)}
+                        style={
+                          item === screenTab
+                            ? styles.exacVariant
+                            : styles.variant
+                        }>
+                        <Text style={styles.variantText}>{item}</Text>
+                      </TouchableOpacity>
+                    </View>
+                  )}
+                />
               </View>
             </View>
-            <FlatList
-              style={styles.variantContainer}
-              data={variant}
-              renderItem={({item}) => (
-                <TouchableOpacity
-                  onPress={() => handleVariantTouch(params, item)}
-                  style={styles.variant}>
-                  <Text style={styles.variantText}>{item}</Text>
-                </TouchableOpacity>
-              )}
-              keyExtractor={index => String(index)}
-            />
+            <View
+              style={{
+                padding: 15,
+                flexDirection: 'column',
+              }}>
+              <View>
+                <Text style={styles.itemDescriptionText}>
+                  {variantDetail[0].item_description}
+                </Text>
+              </View>
+              <View
+                style={{
+                  flexDirection: 'row',
+                  justifyContent: 'space-between',
+                }}>
+                <View
+                  style={{
+                    justifyContent: 'center',
+                  }}>
+                  <Text style={styles.price}>
+                    IDR{' '}
+                    {Number(variantDetail[0].final_price).toLocaleString('ind')}
+                  </Text>
+                </View>
+                <View style={{justifyContent: 'center', alignItems: 'center'}}>
+                  <TouchableOpacity
+                    onPress={() => handleAddItem(variantDetail[0], amount)}
+                    style={styles.shoppingCart}>
+                    <Icon style={styles.icon} name="shopping-cart" />
+                  </TouchableOpacity>
+                </View>
+              </View>
+            </View>
           </View>
-          <View style={styles.itemDescription}>
-            <Text style={styles.itemDescriptionText}>
-              {variantDetail[0].item_description}
-            </Text>
-          </View>
-        </View>
-        <View style={styles.footer}>
-          <View style={styles.priceContainer}>
-            <Text style={styles.price}>
-              IDR {Number(variantDetail[0].final_price).toLocaleString('ind')}
-            </Text>
-          </View>
-          <TouchableOpacity
-            onPress={() => handleAddItem(variantDetail[0], amount)}
-            style={styles.shoppingCart}>
-            <Icon style={styles.icon} name="shopping-cart" />
-          </TouchableOpacity>
-        </View>
-        <View
-          style={{
-            justifyContent: 'center',
-            alignItems: 'center',
-            marginBottom: 40,
-          }}>
+        </ScrollView>
+        <View>
           <View
             style={{
               height: 40,
+              justifyContent: 'center',
+              alignItems: 'center',
             }}>
             {added && (
               <Text
                 style={{
                   fontFamily: 'Poppins-Medium',
                   fontSize: 18,
-                  color: '#fff',
+                  color: '#FFBA33',
                 }}>
                 Item added to cart
               </Text>
@@ -167,16 +193,11 @@ const styles = StyleSheet.create({
   parent: {
     flex: 1,
     backgroundColor: '#362115',
+    paddingBottom: 5,
   },
-  itemContainer: {
-    flexDirection: 'row',
-  },
-  imageContainer: {
-    flexDirection: 'row',
-  },
-  imageParent: {
-    width: 400,
-    height: 550,
+  info1: {
+    padding: 30,
+    flex: 1,
     backgroundColor: '#FFBA33',
     borderBottomRightRadius: 30,
     justifyContent: 'center',
@@ -184,45 +205,48 @@ const styles = StyleSheet.create({
   },
   image: {
     width: PictureSize[0],
-    marginTop: 30,
     backgroundColor: 'grey',
     height: PictureSize[0],
     borderRadius: PictureSize[0] / 2,
   },
   itemText: {
-    marginTop: 40,
     fontWeight: 'bold',
     fontSize: 30,
+    marginVertical: 15,
     textTransform: 'uppercase',
   },
   deliveryInfo: {
     fontSize: 20,
     textAlign: 'center',
-    marginTop: 100,
-    marginHorizontal: 30,
     justifyContent: 'flex-end',
   },
   variantContainer: {
     flexDirection: 'column',
-    marginRight: 20,
-    marginHorizontal: 50,
+    justifyContent: 'center',
+    alignItems: 'center',
   },
   variant: {
     width: PictureSize[1],
     height: PictureSize[1],
     justifyContent: 'center',
-    marginVertical: 30,
+    marginVertical: 15,
     alignItems: 'center',
     borderRadius: PictureSize[1] / 2,
     backgroundColor: 'grey',
+  },
+  exacVariant: {
+    width: PictureSize[1],
+    height: PictureSize[1],
+    justifyContent: 'center',
+    marginVertical: 15,
+    alignItems: 'center',
+    borderRadius: PictureSize[1] / 2,
+    backgroundColor: '#FFBA33',
   },
   variantText: {
     color: '#fff',
     fontWeight: 'bold',
     fontSize: 30,
-  },
-  itemDescription: {
-    margin: 50,
   },
   itemDescriptionText: {
     fontWeight: 'bold',
@@ -230,16 +254,9 @@ const styles = StyleSheet.create({
     fontSize: 25,
     color: '#fff',
   },
-  footer: {
-    flexDirection: 'row',
-    height: 130,
-    alignItems: 'center',
-    justifyContent: 'space-between',
-  },
   price: {
     fontSize: 45,
     color: '#fff',
-    marginLeft: 30,
     fontWeight: 'bold',
   },
   shoppingCart: {
@@ -248,7 +265,6 @@ const styles = StyleSheet.create({
     borderRadius: PictureSize[1] / 2,
     justifyContent: 'center',
     alignItems: 'center',
-    marginRight: 30,
     backgroundColor: '#EBEBEB',
   },
   icon: {
@@ -256,21 +272,17 @@ const styles = StyleSheet.create({
     color: '#362115',
   },
   amountContainer: {
-    backgroundColor: '#fff',
     flexDirection: 'row',
-    borderRadius: 10,
-    height: 70,
-    marginHorizontal: 50,
-    alignItems: 'center',
-    justifyContent: 'center',
+    marginHorizontal: 30,
+    paddingHorizontal: 10,
+    justifyContent: 'space-between',
   },
   primaryAmount: {
     fontSize: 30,
     fontWeight: 'bold',
-    color: '#362115',
+    color: '#fff',
   },
   primaryBtn: {
-    marginHorizontal: 70,
     backgroundColor: '#FFBA33',
     justifyContent: 'center',
     alignItems: 'center',

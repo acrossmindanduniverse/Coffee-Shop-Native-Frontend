@@ -1,3 +1,4 @@
+/* eslint-disable react-native/no-inline-styles */
 import React, {useState} from 'react';
 import {
   View,
@@ -58,7 +59,6 @@ const Payment = props => {
     <View style={styles.parent}>
       <Modal
         visible={modal}
-        style={styles.modal}
         transparent={true}
         animationType={'fade'}
         onRequestClose={() => {
@@ -74,55 +74,51 @@ const Payment = props => {
                 style={styles.primaryBtn}
                 onPress={makeTransaction}
                 activeOpacity={0.5}>
-                <Text style={styles.primaryText2}>Ok</Text>
+                <Text>Ok</Text>
               </TouchableOpacity>
               <TouchableOpacity
                 style={styles.primaryBtn}
                 onPress={() => setModal(false)}
                 activeOpacity={0.5}>
-                <Text style={styles.primaryText2}>Cancel</Text>
+                <Text>Cancel</Text>
               </TouchableOpacity>
             </View>
           </View>
         </View>
       </Modal>
-      <ScrollView style={styles.content}>
+      <ScrollView>
         <View style={styles.content1}>
-          <View style={styles.paymentContainer}>
+          <View style={{marginVertical: 20}}>
             <Text style={styles.paymentText}>Payment</Text>
-            <View style={styles.paymentMethod}>
+          </View>
+          <View>
+            <View style={styles.primaryPaymentMethod}>
               <Image style={styles.paymentPicture} />
               <View style={styles.userPayment}>
-                <Text style={styles.userPaymentText1}>
-                  Lorem ipsum dolor sit amet
-                </Text>
+                <Text style={styles.userPaymentText1}>Lorem ipsum</Text>
                 <Text style={styles.userPaymentText2}>User Name</Text>
               </View>
             </View>
-          </View>
-          <View>
-            <View style={styles.paymentContainer2}>
-              <View style={styles.chooseAnotherPayment}>
-                <Text style={styles.chooseAnotherPaymentText}>
-                  Choose another payment method
-                </Text>
-                <View style={styles.paymentMethod2}>
-                  <View style={styles.paymentMethodFirstContent}>
-                    <Image style={styles.paymentPicture} />
-                    <View style={styles.userPayment}>
-                      <Text style={styles.userPaymentText1}>
-                        Credit or Debit Card
-                      </Text>
-                      <Text style={styles.userPaymentText2}>User Name</Text>
-                    </View>
+            <View style={styles.paymentContainer}>
+              <Text style={styles.chooseAnotherPaymentText}>
+                Choose another payment method
+              </Text>
+              <View style={styles.paymentMethod2}>
+                <View style={{flexDirection: 'row'}}>
+                  <Image style={styles.paymentPicture} />
+                  <View style={styles.userPayment}>
+                    <Text style={styles.userPaymentText1}>
+                      Credit or Debit Card
+                    </Text>
+                    <Text style={styles.userPaymentText2}>User Name</Text>
                   </View>
-                  <View style={styles.chevronRight}>
-                    <Icon name="chevron-right" size={20} />
-                  </View>
+                </View>
+                <View style={{alignItems: 'center', justifyContent: 'center'}}>
+                  <Icon name="chevron-right" size={20} />
                 </View>
               </View>
               <View style={styles.paymentMethod2}>
-                <View style={styles.paymentMethodFirstContent}>
+                <View style={{flexDirection: 'row', justifyContent: 'center'}}>
                   <Image style={styles.paymentPicture} />
                   <View style={styles.userPayment}>
                     <Text style={styles.userPaymentText1}>
@@ -131,18 +127,19 @@ const Payment = props => {
                     <Text style={styles.userPaymentText2}>User Name</Text>
                   </View>
                 </View>
-                <View style={styles.chevronRight}>
+                <View style={{alignItems: 'center', justifyContent: 'center'}}>
                   <Icon name="chevron-right" size={20} />
                 </View>
               </View>
               <View style={styles.paymentMethod2}>
-                <View style={styles.paymentMethodFirstContent}>
+                <View style={{flexDirection: 'row'}}>
                   <Image style={styles.paymentPicture} />
                   <View style={styles.userPayment}>
                     <Text style={styles.userPaymentText1}>Paypal</Text>
+                    <Text style={styles.userPaymentText2}>User Name</Text>
                   </View>
                 </View>
-                <View style={styles.chevronRight}>
+                <View style={{alignItems: 'center', justifyContent: 'center'}}>
                   <Icon name="chevron-right" size={20} />
                 </View>
               </View>
@@ -153,7 +150,7 @@ const Payment = props => {
           <Text style={styles.orderSummaryText}>Order Summary</Text>
           <View>
             <FlatList
-              style={styles.itemContainer}
+              keyExtractor={idx => String(idx)}
               data={items}
               renderItem={({item}) => {
                 console.log(item.item);
@@ -161,7 +158,7 @@ const Payment = props => {
                   <View style={styles.orderItem}>
                     <View style={styles.orderContainer}>
                       <Image style={styles.itemImg} />
-                      <View stlye={styles.itemName}>
+                      <View style={styles.itemName}>
                         <Text style={styles.primaryText}>
                           {item.amount.name}
                         </Text>
@@ -182,7 +179,6 @@ const Payment = props => {
                   </View>
                 );
               }}
-              keyExtractor={idx => String(idx)}
             />
           </View>
           <View style={styles.totalText}>
@@ -227,23 +223,21 @@ const styles = StyleSheet.create({
   // content: {
   //   backgroundColor: 'rgba(0, 0, 0, 0.5)',
   // },
-  modal: {
-    backgroundColor: 'rgba(0, 0, 0, 0.5)',
-  },
   content1: {
     backgroundColor: '#362115',
-    height: 570,
+    paddingHorizontal: 15,
+    paddingVertical: 20,
   },
   modalParent: {
     position: 'absolute',
     width: '100%',
+    paddingVertical: 100,
+    paddingHorizontal: 20,
     backgroundColor: '#000000a0',
     height: '100%',
   },
   modalContainer: {
     backgroundColor: '#fff',
-    marginHorizontal: 60,
-    marginVertical: 200,
     borderRadius: 20,
   },
   customTextContainer: {
@@ -251,7 +245,7 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     borderBottomEndRadius: 30,
     borderBottomStartRadius: 30,
-    height: 80,
+    padding: 15,
   },
   customText: {
     textAlign: 'center',
@@ -261,11 +255,10 @@ const styles = StyleSheet.create({
   },
   btnContainer: {
     flexDirection: 'row',
+    paddingVertical: 70,
+    paddingHorizontal: 15,
     justifyContent: 'space-between',
     alignContent: 'center',
-    marginVertical: 70,
-    top: 20,
-    marginHorizontal: 90,
   },
   primaryBtn: {
     width: 100,
@@ -280,24 +273,20 @@ const styles = StyleSheet.create({
     fontFamily: 'Poppins-Bold',
   },
   paymentContainer: {
-    marginTop: 50,
-    left: 18,
-    alignItems: 'center',
+    marginVertical: 20,
   },
   paymentText: {
     fontFamily: 'Poppins-Black',
+    textAlign: 'center',
     fontSize: 30,
     color: '#fff',
-  },
-  paymentContainer2: {
-    marginTop: 50,
-    alignItems: 'center',
   },
   chooseAnotherPayment: {
     flexDirection: 'column',
   },
   chooseAnotherPaymentText: {
     fontSize: 17,
+    fontFamily: 'Poppins-Light',
     color: '#fff',
   },
   paymentText2: {
@@ -307,44 +296,40 @@ const styles = StyleSheet.create({
   },
   paymentMethod2: {
     flexDirection: 'row',
-    alignItems: 'center',
     justifyContent: 'space-between',
+    marginVertical: 8,
     backgroundColor: '#fff',
-    marginTop: 10,
-    width: 450,
+    padding: 20,
     borderRadius: 15,
-    height: 70,
   },
-  paymentMethodFirstContent: {
+  primaryPaymentMethod: {
     flexDirection: 'row',
+    marginBottom: 20,
+    alignItems: 'center',
+    backgroundColor: '#fff',
+    padding: 15,
+    borderRadius: 15,
   },
   paymentMethod: {
     flexDirection: 'row',
     alignItems: 'center',
     backgroundColor: '#fff',
-    marginTop: 60,
-    width: 450,
-    marginRight: 40,
+    padding: 20,
     borderRadius: 15,
-    height: 70,
-  },
-  chevronRight: {
-    right: 30,
   },
   paymentPicture: {
     width: 50,
     marginHorizontal: 25,
-    marginRight: 44,
     height: 50,
     backgroundColor: 'grey',
     borderRadius: 25,
   },
   userPayment: {
     flexDirection: 'column',
-    marginRight: 190,
   },
   userPaymentText1: {
-    fontWeight: 'bold',
+    fontFamily: 'Poppins-SemiBold',
+    fontSize: 18,
   },
   userPaymentText2: {
     textTransform: 'uppercase',
@@ -354,7 +339,7 @@ const styles = StyleSheet.create({
     flexDirection: 'column',
     marginBottom: 20,
     borderRadius: 20,
-    marginHorizontal: 50,
+    marginHorizontal: 20,
     elevation: 3,
   },
   orderSummaryText: {
@@ -368,7 +353,7 @@ const styles = StyleSheet.create({
     flexDirection: 'column',
     borderBottomWidth: 1,
     borderBottomColor: '#ADADAF',
-    margin: 60,
+    margin: 20,
   },
   totalContent: {
     flexDirection: 'row',
@@ -396,10 +381,10 @@ const styles = StyleSheet.create({
   },
   completePaymentButton: {
     backgroundColor: '#362115',
-    marginHorizontal: 100,
     top: 10,
     borderRadius: 20,
-    height: 50,
+    marginHorizontal: 20,
+    padding: 15,
     justifyContent: 'center',
     alignItems: 'center',
   },
@@ -408,13 +393,9 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
     fontSize: 18,
   },
-  itemContainer: {
-    marginHorizontal: 50,
-    marginVertical: 20,
+  orderItem: {
+    padding: 30,
   },
-  // orderItem: {
-  //   flexDirection: 'row',
-  // },
   orderContainer: {
     flexDirection: 'row',
     justifyContent: 'space-between',
@@ -426,7 +407,9 @@ const styles = StyleSheet.create({
     backgroundColor: 'grey',
   },
   itemName: {
-    left: 19,
+    width: '50%',
+    alignItems: 'flex-start',
+    justifyContent: 'center',
   },
   finalPriceContainer: {
     justifyContent: 'center',
