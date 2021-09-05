@@ -1,3 +1,4 @@
+/* eslint-disable react-native/no-inline-styles */
 import React, {useState, useEffect} from 'react';
 import {
   View,
@@ -257,15 +258,11 @@ const EditProfile = props => {
         visible={modal}
         onRequestClose={() => setModal(true)}
         transparent={true}
-        animationType={'fade'}
-        style={styles.imagePickerModal}>
-        <View style={styles.modalParent}>
+        animationType={'fade'}>
+        <TouchableOpacity
+          onPress={() => setModal(false)}
+          style={styles.modalParent}>
           <View style={styles.modalContent}>
-            <TouchableOpacity
-              onPress={() => showModal(false)}
-              style={styles.closeIcon}>
-              <AntDesign name="close" size={25} />
-            </TouchableOpacity>
             <TouchableOpacity
               onPress={() => launchCamera({}, handeLaunchCamera)}
               style={styles.imagePickerBtn1}>
@@ -279,7 +276,7 @@ const EditProfile = props => {
               <Text style={styles.imagePickerText}>Choose from gallery</Text>
             </TouchableOpacity>
           </View>
-        </View>
+        </TouchableOpacity>
       </Modal>
     </View>
   );
@@ -411,7 +408,6 @@ const styles = StyleSheet.create({
     marginHorizontal: 100,
     alignItems: 'center',
     borderWidth: 1,
-    height: 35,
     borderRadius: 10,
     marginVertical: 20,
     flexDirection: 'row',
@@ -423,7 +419,6 @@ const styles = StyleSheet.create({
   },
   imagePickerIcon: {
     fontSize: 18,
-    marginHorizontal: 10,
   },
 });
 

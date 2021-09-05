@@ -35,7 +35,7 @@ const ConfirmPassword = props => {
         <View style={styles.inputContainer}>
           <View
             style={{
-              height: 35,
+              height: 60,
             }}>
             {updateErrMsg !== '' && (
               <Text style={styles.errorMsg}>{updateErrMsg}</Text>
@@ -74,7 +74,7 @@ const styles = StyleSheet.create({
   inputContainer: {
     backgroundColor: '#fff',
     elevation: 3,
-    padding: 70,
+    padding: 30,
     borderRadius: 15,
   },
   errorMsg: {
@@ -88,7 +88,7 @@ const styles = StyleSheet.create({
     borderColor: 'grey',
   },
   input: {
-    fontSize: 18,
+    fontSize: 12,
     padding: 20,
     fontWeight: 'bold',
   },

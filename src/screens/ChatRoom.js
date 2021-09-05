@@ -19,6 +19,7 @@ import defaultPicture from '../../assets/defaultPicture.png';
 import DocumentPicker from 'react-native-document-picker';
 import RNFetchBlob from 'rn-fetch-blob';
 import {io} from 'socket.io-client';
+import Icon from 'react-native-vector-icons/FontAwesome';
 import {API_URL} from '@env';
 
 const ChatRoom = props => {
@@ -87,7 +88,7 @@ const ChatRoom = props => {
   };
 
   useEffect(() => {
-    props.getChatRoom(props.auth.refreshToken?.token, newRoute[0]);
+    props.getChatRoom(props.auth.refreshToken.token, newRoute[0]);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [send, latest]);
 
@@ -108,16 +109,51 @@ const ChatRoom = props => {
     scrollViewRef.current.scrollToEnd({animated: true});
   };
 
+  console.log(newRoute[2], 'name');
+
   return (
     <View style={styles.parent}>
-      <RoomChatHeader
-        user={newRoute[2]}
-        picture={
-          newRoute[0] !== null
-            ? {uri: `${API_URL}${newRoute[1]}`}
-            : defaultPicture
-        }
-      />
+      <View style={{backgroundColor: '#fff'}}>
+        <TouchableOpacity
+          style={{
+            margin: 15,
+            justifyContent: 'center',
+          }}
+          onPress={() => {
+            props.navigation.goBack();
+            props.getChat(props.auth.refreshToken.token);
+          }}>
+          <Icon
+            style={{
+              fontSize: 30,
+            }}
+            name="chevron-left"
+          />
+        </TouchableOpacity>
+        <View
+          style={{
+            justifyContent: 'center',
+          }}>
+          <View
+            style={{
+              justifyContent: 'center',
+              alignItems: 'center',
+            }}>
+            <Image
+              source={
+                newRoute[0] !== null
+                  ? {uri: `${API_URL}${newRoute[1]}`}
+                  : defaultPicture
+              }
+              style={styles.anotherUserPicture}
+            />
+            <Text
+              style={{fontFamily: 'Poppins-Bold', fontSize: 30, marginTop: 15}}>
+              {newRoute[2]}
+            </Text>
+          </View>
+        </View>
+      </View>
       <ScrollView
         ref={scrollViewRef}
         onContentSizeChange={handleScrollView}
@@ -300,6 +336,13 @@ const styles = StyleSheet.create({
     borderTopColor: '#EFEEEE',
     borderTopWidth: 3,
   },
+  anotherUserPicture: {
+    height: 50,
+    width: 50,
+    borderRadius: 50 / 2,
+    resizeMode: 'cover',
+    backgroundColor: 'grey',
+  },
   timeContainer1: {
     alignItems: 'flex-end',
   },
@@ -364,7 +407,7 @@ const styles = StyleSheet.create({
   singedUser: {
     justifyContent: 'flex-end',
     flexDirection: 'row',
-    marginHorizontal: 70,
+    marginHorizontal: 20,
   },
   // singedUserContent: {
   //   marginLeft: 30,

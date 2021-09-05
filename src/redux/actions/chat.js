@@ -1,6 +1,19 @@
 import {http} from '../../helpers/http';
 import {API_URL} from '@env';
 
+export const getChat = token => async dispatch => {
+  try {
+    const {data} = await http(token).get(`${API_URL}/chat/room`);
+    console.log(data, 'test data list');
+    dispatch({
+      type: 'GET_CHAT',
+      payload: data.data,
+    });
+  } catch (err) {
+    console.log(err);
+  }
+};
+
 export const sendChat = (token, setData) => async dispatch => {
   const form = new FormData();
   form.append('message', setData.message);
@@ -21,20 +34,7 @@ export const sendChat = (token, setData) => async dispatch => {
   }
 };
 
-export const getChat = token => async dispatch => {
-  try {
-    const {data} = await http(token).get(`${API_URL}/chat/room`);
-    dispatch({
-      type: 'GET_CHAT',
-      payload: data.data,
-    });
-  } catch (err) {
-    console.log(err);
-  }
-};
-
 export const getChatRoom = (token, recipient) => async dispatch => {
-  console.log(token, recipient, 'chat action');
   try {
     const {data} = await http(token).get(`${API_URL}/chat/${recipient}`);
     dispatch({

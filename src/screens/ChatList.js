@@ -22,7 +22,7 @@ import PushNotification from 'react-native-push-notification';
 import defaultPicture from '../../assets/defaultPicture.png';
 
 const ChatList = props => {
-  const {latest, deleteToggle} = props.chat;
+  const {latest, deleteToggle, send} = props.chat;
   const {info} = props.auth;
   const latestReverse = latest.reverse();
   const {findUser} = props.user;
@@ -93,7 +93,6 @@ const ChatList = props => {
         title: `New message from: ${data.senderData.name}`,
         message: `${data.message}`,
       });
-      props.getChat(props.auth.refreshToken.token);
     });
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);

@@ -1,3 +1,4 @@
+/* eslint-disable react-native/no-inline-styles */
 import React from 'react';
 import {TouchableOpacity, View, StyleSheet, Text, Image} from 'react-native';
 import Icon from 'react-native-vector-icons/FontAwesome';
@@ -65,9 +66,21 @@ export const ChatHeader = props => {
 export const RoomChatHeader = props => {
   return (
     <View style={{backgroundColor: '#fff'}}>
+      <TouchableOpacity
+        style={{
+          margin: 15,
+          justifyContent: 'center',
+        }}
+        onPress={() => props.navigation.goBack()}>
+        <Icon
+          style={{
+            fontSize: 30,
+          }}
+          name="chevron-left"
+        />
+      </TouchableOpacity>
       <View
         style={{
-          marginVertical: 30,
           justifyContent: 'center',
         }}>
         <View

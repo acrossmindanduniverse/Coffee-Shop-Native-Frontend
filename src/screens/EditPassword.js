@@ -270,13 +270,13 @@ const styles = StyleSheet.create({
   inputContent: {
     borderRadius: 25,
     flexDirection: 'row',
-    padding: 15,
+    padding: 20,
     justifyContent: 'space-between',
     borderWidth: 1,
     borderColor: 'grey',
   },
   input: {
-    fontSize: 18,
+    fontSize: 12,
     fontWeight: 'bold',
   },
   inputBtn: {
