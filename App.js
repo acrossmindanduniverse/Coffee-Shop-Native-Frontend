@@ -1,4 +1,4 @@
-import React, {useEffect} from 'react';
+import React from 'react';
 import {createStackNavigator} from '@react-navigation/stack';
 import {
   TouchableOpacity,
@@ -40,7 +40,6 @@ import ConfirmPassword from './src/screens/ConfirmPassword';
 import EditPassword from './src/screens/EditPassword';
 import ChatList from './src/screens/ChatList';
 import ChatRoom from './src/screens/ChatRoom';
-import {API_URL} from '@env';
 
 const Drawer = createDrawerNavigator();
 const Stack = createStackNavigator();

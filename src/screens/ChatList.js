@@ -16,13 +16,14 @@ import {
   Modal,
   ActivityIndicator,
 } from 'react-native';
-import {API_URL} from '@env';
 import {io} from 'socket.io-client';
 import PushNotification from 'react-native-push-notification';
 import defaultPicture from '../../assets/defaultPicture.png';
 
+const API_URL = 'https://historycoffee.herokuapp.com';
+
 const ChatList = props => {
-  const {latest, deleteToggle, send} = props.chat;
+  const {latest, deleteToggle} = props.chat;
   const {info} = props.auth;
   const latestReverse = latest.reverse();
   const {findUser} = props.user;

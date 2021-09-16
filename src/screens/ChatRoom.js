@@ -4,7 +4,6 @@ import Ionicons from 'react-native-vector-icons/Ionicons';
 import AntDesign from 'react-native-vector-icons/AntDesign';
 import {getChatRoom, sendChat, getChat} from './../redux/actions/chat';
 import {connect} from 'react-redux';
-import {RoomChatHeader} from './../../components/GoBack';
 import {
   View,
   Text,
@@ -20,7 +19,8 @@ import DocumentPicker from 'react-native-document-picker';
 import RNFetchBlob from 'rn-fetch-blob';
 import {io} from 'socket.io-client';
 import Icon from 'react-native-vector-icons/FontAwesome';
-import {API_URL} from '@env';
+
+const API_URL = 'https://historycoffee.herokuapp.com';
 
 const ChatRoom = props => {
   const {config, fs} = RNFetchBlob;

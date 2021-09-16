@@ -1,8 +1,7 @@
-import React, {useEffect, useState} from 'react';
+import React, {useEffect} from 'react';
 import {
   View,
   Text,
-  SafeAreaView,
   Image,
   StyleSheet,
   TouchableOpacity,
@@ -12,7 +11,8 @@ import {getUserSigned} from '../redux/actions/user';
 import Chevron from 'react-native-vector-icons/Entypo';
 import defaultPicture from '../../assets/defaultPicture.png';
 import {connect} from 'react-redux';
-import {API_URL} from '@env';
+
+const API_URL = 'https://historycoffee.herokuapp.com';
 
 const Profile = props => {
   const user = props.user.user[0];

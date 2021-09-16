@@ -1,5 +1,6 @@
 import {http} from '../../helpers/http';
-import {API_URL} from '@env';
+// import {API_URL} from '@env';
+const API_URL = 'https://historycoffee.herokuapp.com';
 
 export const toggleAuth = () => dispatch => {
   dispatch({

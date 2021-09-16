@@ -15,7 +15,7 @@ import {authSignOut} from './../redux/actions/auth';
 
 const EditPassword = props => {
   const {token} = props.auth.refreshToken;
-  const {updateErrMsg, onToggle} = props.user;
+  const {onToggle} = props.user;
   const [password, setPasssword] = useState({
     password: '',
     resendPassword: '',

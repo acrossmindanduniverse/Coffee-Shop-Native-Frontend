@@ -23,8 +23,9 @@ import {connect} from 'react-redux';
 import {launchImageLibrary, launchCamera} from 'react-native-image-picker';
 import AntDesign from 'react-native-vector-icons/AntDesign';
 import {authSignOut, authSignIn} from './../redux/actions/auth';
-import {API_URL} from '@env';
 import defaultPicture from '../../assets/defaultPicture.png';
+
+const API_URL = 'https://historycoffee.herokuapp.com';
 
 const EditProfile = props => {
   const {token} = props.auth.refreshToken;

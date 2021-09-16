@@ -34,8 +34,6 @@ const Cart = props => {
     }
   }, [close]);
 
-  console.log(close, 'test items 123123');
-
   return items.length > 0 ? (
     <View style={styles.parent}>
       <View style={{flex: 1}}>

@@ -6,7 +6,6 @@ import {
   ScrollView,
   StyleSheet,
   TouchableOpacity,
-  SafeAreaView,
   TextInput,
   Image,
 } from 'react-native';
@@ -50,8 +49,6 @@ const HomeScreen = props => {
       });
     }
   }, []);
-
-  console.log(props.auth, 'auth home screen');
 
   useEffect(() => {
     mapAllCategoryName(data);

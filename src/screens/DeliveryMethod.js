@@ -7,7 +7,6 @@ import {
   StyleSheet,
   TouchableOpacity,
   TextInput,
-  SafeAreaView,
   ScrollView,
 } from 'react-native';
 import {getUserSigned} from '../redux/actions/user';

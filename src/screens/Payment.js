@@ -19,7 +19,7 @@ const Payment = props => {
   const [modal, setModal] = useState(false);
   const {token} = props.auth.refreshToken;
   const shipping = 6000;
-  const {cartItem, items} = props.cart;
+  const {items} = props.cart;
   const cost = items.map(e => e.amount);
   const setTotal = items.map(e => e.amount.final_price * e.item);
   const costTotal = setTotal.reduce((acc, curr) => acc + curr);
@@ -52,8 +52,6 @@ const Payment = props => {
       props.navigation.navigate('home');
     });
   };
-
-  console.log(cartItem);
 
   return (
     <View style={styles.parent}>
